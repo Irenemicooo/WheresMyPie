@@ -1,0 +1,35 @@
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependencies
+vendor/
+
+# Private directory
+private/logs/*
+private/temp/*
+!private/logs/.gitkeep
+!private/temp/.gitkeep
+
+# Uploaded files
+public_html/uploads/items/*
+public_html/uploads/evidence/*
+public_html/uploads/profiles/*
+!public_html/uploads/items/.gitkeep
+!public_html/uploads/evidence/.gitkeep
+!public_html/uploads/profiles/.gitkeep
+
+# Cache and logs
+*.log
+*.cache
+
+# Environment files
+.env
+config/*.php
+!config/*.example.php
+
+# OS generated files
+.DS_Store
+Thumbs.db
