@@ -15,7 +15,7 @@ CREATE TABLE items (
     location VARCHAR(100) NOT NULL,
     date_found DATE NOT NULL,
     photo_path VARCHAR(255),
-    status ENUM('open', 'claimed', 'closed') DEFAULT 'open',
+    status ENUM('available', 'claimed', 'returned') DEFAULT 'available',
     user_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)

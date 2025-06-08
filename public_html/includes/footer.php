@@ -1,36 +1,41 @@
 <?php
-    </main>
+// Ensure auth object exists
+if (!isset($auth)) {
+    require_once __DIR__ . '/auth.php';
+    $auth = new Auth($pdo);
+}
 
+// Get current year for copyright
+$currentYear = date('Y');
+
+// Check if user is logged in safely
+$isLoggedIn = isset($auth) && $auth->isLoggedIn();
+?>
+        </div>  <!-- Close main content container -->
+    </main>
     <footer class="site-footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Where's My Pie?</h3>
-                    <p>A community-based lost and found platform</p>
+                <div class="footer-info">
+                    <p>&copy; <?= $currentYear ?> <?= APP_NAME ?>. Built with ❤️</p>
+                    <?php if ($isLoggedIn): ?>
+                        <div class="footer-nav">
+                            <a href="<?= BASE_URL ?>/user/dashboard.php">My Dashboard</a> |
+                            <a href="<?= BASE_URL ?>/items/create.php">Report Found</a> |
+                            <a href="<?= BASE_URL ?>/items/search.php">Search Items</a>
+                        </div>
+                    <?php endif; ?>
                 </div>
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <ul>
-                        <li><a href="<?= BASE_URL ?>">Home</a></li>
-                        <li><a href="<?= BASE_URL ?>/items/">Browse Items</a></li>
-                        <?php if ($auth->isLoggedIn()): ?>
-                            <li><a href="<?= BASE_URL ?>/user/dashboard.php">Dashboard</a></li>
-                        <?php else: ?>
-                            <li><a href="<?= BASE_URL ?>/auth/login.php">Login</a></li>
-                        <?php endif; ?>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Contact</h3>
-                    <p>If you need assistance, please contact the administrator.</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; <?= date('Y') ?> Where's My Pie? | Created by TreeNoPie Team</p>
             </div>
         </div>
     </footer>
 
+    <!-- Base JavaScript -->
     <script src="<?= BASE_URL ?>/assets/js/main.js"></script>
+    <?php if (isset($pageScripts) && is_array($pageScripts)): ?>
+        <?php foreach ($pageScripts as $script): ?>
+            <script src="<?= BASE_URL ?>/assets/js/<?= htmlspecialchars($script) ?>"></script>
+        <?php endforeach; ?>
+    <?php endif; ?>
 </body>
 </html>

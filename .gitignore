@@ -13,10 +13,12 @@ private/temp/*
 !private/logs/.gitkeep
 !private/temp/.gitkeep
 
-# Uploaded files
-public_html/uploads/items/*
-public_html/uploads/evidence/*
-public_html/uploads/profiles/*
+# Config files
+public_html/includes/config.php
+
+# Upload directories
+public_html/uploads/*
+!public_html/uploads/.gitkeep
 !public_html/uploads/items/.gitkeep
 !public_html/uploads/evidence/.gitkeep
 !public_html/uploads/profiles/.gitkeep
@@ -24,11 +26,6 @@ public_html/uploads/profiles/*
 # Cache and logs
 *.log
 *.cache
-
-# Environment files
-.env
-config/*.php
-!config/*.example.php
 
 # OS generated files
 .DS_Store
