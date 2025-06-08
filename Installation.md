@@ -11,7 +11,7 @@ This guide will walk you through the installation process of Where's My Pie? Los
 - 💻 Another computer (for preparing SD card)
 
 ### Software Requirements
-- 📥 Raspberry Pi Imager
+- 📥 DietPi image file
 - 📝 Text editor (e.g., Notepad++)
 - 📟 SSH client (e.g., PuTTY)
 
@@ -19,43 +19,46 @@ This guide will walk you through the installation process of Where's My Pie? Los
 
 ### Step 1️⃣ - System Preparation
 
-1. **Download and Install Raspberry Pi Imager**
-   - Go to [Raspberry Pi website](https://www.raspberrypi.com/software/)
-   - Download and install Raspberry Pi Imager
+1. **Download and Write DietPi Image**
+   - Download DietPi image for Raspberry Pi from [DietPi website](https://dietpi.com/#download)
+   - Use tools like balenaEtcher or Win32DiskImager to write the image to SD card
+   - After writing, open the `dietpi.txt` file on the SD card and set:
+     ```
+     AUTO_SETUP_KEYBOARD_LAYOUT=us
+     AUTO_SETUP_TIMEZONE=America/New_York    # Change to your timezone
+     AUTO_SETUP_NET_HOSTNAME=wheresmypie
+     AUTO_SETUP_NET_WIFI_ENABLED=1           # Set to 0 if using ethernet
+     ```
 
-2. **Write OS to SD Card**
-   ```bash
-   # 1. Open Raspberry Pi Imager
-   # 2. Choose OS: Raspberry Pi OS Lite (64-bit)
-   # 3. Select your SD card
-   # 4. Click settings icon ⚙️ and configure:
-   #    - Set hostname: wheresmypie
-   #    - Enable SSH
-   #    - Set username and password
-   #    - Configure WiFi (if needed)
-   # 5. Click "Write" and wait for completion
-   ```
+2. **Configure WiFi (if needed)**
+   - Edit `dietpi-wifi.txt` on the SD card:
+     ```
+     aWIFI_SSID[0]='your_wifi_name'
+     aWIFI_KEY[0]='your_wifi_password'
+     ```
 
 3. **First Boot**
    ```bash
    # 1. Insert the SD card into Raspberry Pi
    # 2. Connect the power supply
-   # 3. Wait 1-2 minutes for the system to complete the first boot
+   # 3. Wait for DietPi to complete first boot setup
+   # 4. Login credentials:
+   #    Username: root
+   #    Password: dietpi
    ```
 
 ### Step 2️⃣ - Install Basic Software
 
-1. **Connect to Raspberry Pi**
+1. **Connect to DietPi**
    ```bash
-   # Connect using SSH (Windows users use PuTTY)
-   ssh pi@wheresmypie.local
+   # Connect using SSH
+   ssh root@wheresmypie.local
    
-   # Update the system
-   sudo apt update
-   sudo apt upgrade -y
-   
-   # Install essential tools
-   sudo apt install -y git curl wget unzip
+   # Install optimized LAMP stack using DietPi-Software
+   dietpi-software
+   # Select: 
+   # - 84  : LAMP stack
+   # - 122 : PHP extensions
    ```
 
 2. **Install Web Server**
