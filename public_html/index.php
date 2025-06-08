@@ -3,9 +3,13 @@ require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
 require_once 'includes/auth.php';
-session_start();
 
-// Get statistics
+// Check if session not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Get statistics using the global $pdo
 $stats = [
     'total_items' => $pdo->query("SELECT COUNT(*) FROM items")->fetchColumn(),
     'claimed_items' => $pdo->query("SELECT COUNT(*) FROM items WHERE status = 'claimed'")->fetchColumn(),

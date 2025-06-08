@@ -53,8 +53,14 @@ class Database {
         }
     }
 
-    // prevent cloning and unserializing
+    // Prevent cloning
     private function __clone() {}
-    private function __wakeup() {}
+    
+    // Changed visibility to public
+    public function __wakeup() {}
 }
+
+// Create global PDO instance
+$db = Database::getInstance();
+$pdo = $db->getConnection();
 ?>

@@ -2,7 +2,12 @@
 require_once '../includes/config.php';
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
-session_start();
+require_once '../includes/auth.php';
+
+// Check if session not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $errors = [];
 $username_or_email = '';

@@ -336,6 +336,32 @@ sudo netstat -tlnp | grep :80
 sudo ufw status
 ```
 
+### DietPi Login Issues
+```bash
+# 1. Try default credentials first
+Username: root
+Password: dietpi
+
+# 2. If still can't login, connect SD card to computer and:
+# - Open the 'boot' partition
+# - Edit /boot/dietpi.txt and add:
+AUTO_SETUP_SSH_SERVER_ENABLE=1
+
+# 3. If still having issues, try recovery mode:
+# - Power off Raspberry Pi
+# - Remove SD card
+# - Edit /boot/cmdline.txt on SD card and add at the end:
+init=/bin/sh
+# - Insert SD card and power on
+# - Once in emergency shell:
+mount -o remount,rw /
+passwd root    # Set new root password
+sync
+reboot -f
+
+# 4. After reboot, remove 'init=/bin/sh' from cmdline.txt
+```
+
 ## 🔐 Security Hardening
 
 ### Additional Security Steps (Recommended)
