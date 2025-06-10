@@ -202,35 +202,85 @@ This guide will walk you through the installation process of Where's My Pie? Los
 
 ### Step 5️⃣ - Configure Apache
 
-1. **Enable PHP and Rewrite Modules**
+1. **Enable Network Access**
+   ```bash
+   # Get Raspberry Pi IP address
+   ip addr show
+
+   # Edit Apache configuration
+   sudo nano /etc/apache2/apache2.conf
+
+   # Add or modify:
+   <Directory /var/www/html>
+       Options Indexes FollowSymLinks
+       AllowOverride All
+       Require all granted
+   </Directory>
+   
+   # Edit MariaDB configuration to allow network access
+   sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
+   
+   # Change bind-address from 127.0.0.1 to:
+   bind-address = 0.0.0.0
+   
+   # Restart services
+   sudo systemctl restart apache2
+   sudo systemctl restart mariadb
+   ```
+
+2. **Enable Required Modules**
    ```bash
    # Enable Apache modules
-   sudo a2enmod php7.4
+   sudo a2enmod php8.2
    sudo a2enmod rewrite
+   sudo a2enmod headers
    
    # Restart Apache
    sudo systemctl restart apache2
    ```
 
-2. **Configure Virtual Host (Optional)**
+3. **Configure Apache Security**
+   ```bash
+   # Edit apache2.conf
+   sudo nano /etc/apache2/apache2.conf
+   
+   # Add at the end of the file:
+   ServerName localhost
+   ```
+
+4. **Configure Virtual Host**
    ```bash
    # Create virtual host configuration
    sudo tee /etc/apache2/sites-available/WheresMyPie.conf > /dev/null << 'EOF'
    <VirtualHost *:80>
+       ServerAdmin webmaster@localhost
        DocumentRoot /var/www/html/WheresMyPie/public_html
        ServerName WheresMyPie.local
-       
-       Alias /WheresMyPie /var/www/html/WheresMyPie/public_html
-       
+
        <Directory "/var/www/html/WheresMyPie/public_html">
+           Options -Indexes +FollowSymLinks
            AllowOverride All
            Require all granted
        </Directory>
+
+       ErrorLog ${APACHE_LOG_DIR}/error.log
+       CustomLog ${APACHE_LOG_DIR}/access.log combined
    </VirtualHost>
    EOF
+   ```
 
-   # Enable the site
+5. **Enable New Configuration**
+   ```bash
+   # Disable default site
+   sudo a2dissite 000-default.conf
+   
+   # Enable new site
    sudo a2ensite WheresMyPie.conf
+   
+   # Test configuration
+   sudo apache2ctl configtest
+   
+   # Reload Apache
    sudo systemctl reload apache2
    ```
 

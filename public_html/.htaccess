@@ -1,12 +1,6 @@
 RewriteEngine On
 RewriteBase /WheresMyPie/
 
-# If request is not a file or directory
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-# Forward to index.php
-RewriteRule ^(.*)$ index.php [QSA,L]
-
 # Security headers
 Header set X-Frame-Options "SAMEORIGIN"
 Header set X-XSS-Protection "1; mode=block"

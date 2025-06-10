@@ -1,9 +1,9 @@
 <?php
 // Database configuration
-define('DB_HOST', 'localhost');
+define('DB_HOST', 'localhost');  // change IP in production
 define('DB_NAME', 'WheresMyPie');
-define('DB_USER', 'root');  // Change in production
-define('DB_PASS', '');      // Change in production
+define('DB_USER', 'pieuser');  // Change in production
+define('DB_PASS', 'treenopie');      // Change in production
 
 // Application settings
 define('APP_NAME', 'Where\'s My Pie?');
@@ -37,4 +37,6 @@ if (DEBUG) {
     error_reporting(0);
     ini_set('display_errors', 0);
 }
+
+session_start();
 ?>
