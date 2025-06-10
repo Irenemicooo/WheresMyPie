@@ -1,0 +1,9 @@
+# Deny PHP file execution
+<FilesMatch "\.php$">
+    Require all denied
+</FilesMatch>
+
+# Allow only image files
+<FilesMatch "\.(jpg|jpeg|png|gif)$">
+    Require all granted
+</FilesMatch>

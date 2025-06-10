@@ -19,6 +19,7 @@ public_html/includes/config.php
 # Upload directories
 public_html/uploads/*
 !public_html/uploads/.gitkeep
+!public_html/uploads/.htaccess
 !public_html/uploads/items/.gitkeep
 !public_html/uploads/evidence/.gitkeep
 !public_html/uploads/profiles/.gitkeep
