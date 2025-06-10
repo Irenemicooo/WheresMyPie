@@ -7,7 +7,7 @@ define('DB_PASS', 'treenopie');      // Change in production
 
 // Application settings
 define('APP_NAME', 'Where\'s My Pie?');
-define('BASE_URL', '/WheresMyPie');  // 移除 public_html
+define('BASE_URL', '');
 define('UPLOAD_DIR', __DIR__ . '/../uploads/');
 define('MAX_FILE_SIZE', 5242880); // 5MB
 

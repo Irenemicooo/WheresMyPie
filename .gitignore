@@ -13,9 +13,6 @@ private/temp/*
 !private/logs/.gitkeep
 !private/temp/.gitkeep
 
-# Config files
-public_html/includes/config.php
-
 # Upload directories
 public_html/uploads/*
 !public_html/uploads/.gitkeep
