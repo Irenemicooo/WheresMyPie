@@ -4,8 +4,11 @@ require_once '../../includes/db.php';
 require_once '../../includes/functions.php';
 require_once '../../includes/auth.php';
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 header('Content-Type: application/json');
-session_start();
 
 $response = ['success' => false, 'data' => null, 'message' => ''];
 
@@ -56,6 +59,11 @@ try {
     $response['success'] = true;
     $response['data'] = ['claim_id' => $pdo->lastInsertId()];
     $response['message'] = 'Claim submitted successfully';
+    
+    // Add redirect header
+    setFlashMessage('success', 'Your claim has been submitted successfully');
+    header('Location: /items/view.php?id=' . $_POST['item_id']);
+    exit;
 
 } catch (Exception $e) {
     http_response_code(400);

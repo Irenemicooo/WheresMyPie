@@ -36,7 +36,7 @@ include '../includes/header.php';
 <div class="container">
     <h2>Submit Claim for: <?= htmlspecialchars($item['title']) ?></h2>
 
-    <form action="api/create.php" method="post" enctype="multipart/form-data">
+    <form method="post" action="api/create.php" enctype="multipart/form-data" class="claim-form">
         <input type="hidden" name="item_id" value="<?= $item_id ?>">
         
         <div class="form-group">
