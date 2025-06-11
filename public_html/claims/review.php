@@ -39,8 +39,9 @@ include '../includes/header.php';
                     
                     <?php if ($claim['evidence_img']): ?>
                         <div class="evidence-image">
-                            <img src="<?= BASE_URL ?>/<?= htmlspecialchars($claim['evidence_img']) ?>" 
-                                 alt="Evidence" class="img-thumbnail">
+                            <img src="/<?= htmlspecialchars($claim['evidence_img']) ?>" 
+                                 alt="Evidence" 
+                                 style="max-width: 200px; max-height: 200px; object-fit: contain;">
                         </div>
                     <?php endif; ?>
 
@@ -66,7 +67,11 @@ function rejectClaim(claimId) {
 }
 
 function updateClaimStatus(claimId, status) {
-    fetch('api/update.php', {
+    if (!confirm('Are you sure you want to ' + status + ' this claim?')) {
+        return;
+    }
+
+    fetch('/claims/api/update.php', {  // 修改為完整路徑
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -76,17 +81,22 @@ function updateClaimStatus(claimId, status) {
             status: status
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             location.reload();
         } else {
-            alert('Error: ' + data.message);
+            alert('Error: ' + (data.message || 'Failed to update status'));
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Failed to update claim status');
+        alert('Failed to update claim status. Please try again.');
     });
 }
 </script>
