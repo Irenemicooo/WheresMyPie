@@ -32,7 +32,7 @@ if (!isset($page_title)) {
     <header class="site-header">
         <nav class="main-nav" role="navigation" aria-label="Main navigation">
             <div class="nav-brand">
-                <a href="<?= BASE_URL ?>" class="brand-link">
+                <a href="/" class="brand-link">
                     <img src="<?= BASE_URL ?>/assets/images/logo.png" alt="Where's My Pie Logo" class="logo" onerror="this.style.display='none'">
                     <span class="brand-text">Where's My Pie?</span>
                 </a>
