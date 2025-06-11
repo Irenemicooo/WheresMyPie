@@ -17,7 +17,7 @@ $isLoggedIn = isset($auth) && $auth->isLoggedIn();
         <div class="container">
             <div class="footer-content">
                 <div class="footer-info">
-                    <p>&copy; <?= $currentYear ?> <?= APP_NAME ?>. Built with ❤️</p>
+                    <p>&copy; <?= $currentYear ?> <?= APP_NAME ?>. Built By Team TreeNoPie</p>
                     <?php if ($isLoggedIn): ?>
                         <div class="footer-nav">
                             <a href="<?= BASE_URL ?>/user/dashboard.php">My Dashboard</a> |
