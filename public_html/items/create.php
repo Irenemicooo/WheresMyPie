@@ -55,53 +55,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             header("Location: index.php");
             exit;
-        }UG) {
-    } catch (Exception $e) {
-            ");        } else {
-            $stmt->execute([$pdo->lastInsertId(), $_SESSION['user_id']]);. Please try again.';
-
-            header("Location: index.php");
-            exit;
         }
     } catch (Exception $e) {
-        if (DEBUG) {./includes/header.php'; ?>
+        if (DEBUG) {
             $errors[] = $e->getMessage();
-        } else {s="container">
-            $errors[] = 'Error saving item. Please try again.';h2>Report a Found Item</h2>
+        } else {
+            $errors[] = 'Error saving item. Please try again.';
         }
-    }  <?php if (!empty($errors)): ?>
-}        <div class="error">
+    }
+}
 ?>
-                <?php foreach ($errors as $error): ?>
-<?php include '../includes/header.php'; ?>><?= htmlspecialchars($error) ?></li>
-; ?>
-<div class="container">            </ul>
+
+<?php include '../includes/header.php'; ?>
+
+<div class="container">
     <h2>Report a Found Item</h2>
 
     <?php if (!empty($errors)): ?>
-        <div class="error">multipart/form-data">
+        <div class="error">
             <ul>
-                <?php foreach ($errors as $error): ?>le" id="title" value="<?= htmlspecialchars($title) ?>" required>
+                <?php foreach ($errors as $error): ?>
                     <li><?= htmlspecialchars($error) ?></li>
-                <?php endforeach; ?> for="description">Description</label>
-            </ul>ame="description" id="description"><?= htmlspecialchars($description) ?></textarea>
+                <?php endforeach; ?>
+            </ul>
         </div>
     <?php endif; ?>
- id="category" value="<?= htmlspecialchars($category) ?>" required>
+
     <form action="create.php" method="post" enctype="multipart/form-data">
-        <label for="title">Title *</label>        <label for="location">Location Found *</label>
-        <input type="text" name="title" id="title" value="<?= htmlspecialchars($title) ?>" required>ion" value="<?= htmlspecialchars($location) ?>" required>
+        <label for="title">Title *</label>
+        <input type="text" name="title" id="title" value="<?= htmlspecialchars($title) ?>" required>
 
-        <label for="description">Description</label>        <label for="date_found">Date Found *</label>
-        <textarea name="description" id="description"><?= htmlspecialchars($description) ?></textarea>"date_found" value="<?= htmlspecialchars($date_found) ?>" required>
+        <label for="description">Description</label>
+        <textarea name="description" id="description"><?= htmlspecialchars($description) ?></textarea>
 
-        <label for="category">Category *</label>        <label for="photo">Upload Photo</label>
-        <input type="text" name="category" id="category" value="<?= htmlspecialchars($category) ?>" required>ept="image/*">
+        <label for="category">Category *</label>
+        <input type="text" name="category" id="category" value="<?= htmlspecialchars($category) ?>" required>
 
-        <label for="location">Location Found *</label>        <button type="submit" class="btn btn-primary">Submit</button>
+        <label for="location">Location Found *</label>
         <input type="text" name="location" id="location" value="<?= htmlspecialchars($location) ?>" required>
 
         <label for="date_found">Date Found *</label>
-        <input type="date" name="date_found" id="date_found" value="<?= htmlspecialchars($date_found) ?>" required>        <label for="photo">Upload Photo</label>        <input type="file" name="photo" id="photo" accept="image/*">        <button type="submit" class="btn btn-primary">Submit</button>    </form></div>
+        <input type="date" name="date_found" id="date_found" value="<?= htmlspecialchars($date_found) ?>" required>
+
+        <label for="photo">Upload Photo</label>
+        <input type="file" name="photo" id="photo" accept="image/*">
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
 
 <?php include '../includes/footer.php'; ?>
