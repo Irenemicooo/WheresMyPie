@@ -26,6 +26,11 @@ $stmt = $pdo->prepare("
     FROM items i 
     JOIN users u ON i.user_id = u.user_id 
     WHERE i.status = 'available' 
+    AND NOT EXISTS (
+        SELECT 1 FROM claims c 
+        WHERE c.item_id = i.item_id 
+        AND c.status = 'approved'
+    )
     ORDER BY i.created_at DESC 
     LIMIT 6
 ");

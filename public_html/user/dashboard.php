@@ -89,11 +89,10 @@ include '../includes/header.php';
                         <div class="claim-card">
                             <h4><?= htmlspecialchars($claim['item_title']) ?></h4>
                             <p>Status: <span class="status-<?= $claim['status'] ?>">
-                                <?= ucfirst($claim['status']) ?>
+                                <?= $claim['status'] === 'approved' ? 'Claimed' : ucfirst($claim['status']) ?>
                             </span></p>
                             <p>Submitted: <?= date('Y-m-d', strtotime($claim['created_at'])) ?></p>
-                            <a href="../claims/view.php?id=<?= $claim['claim_id'] ?>" 
-                               class="btn btn-sm btn-primary">View Details</a>
+                            <a href="../claims/view.php?id=<?= $claim['claim_id'] ?>" class="btn btn-primary">View Details</a>
                         </div>
                     <?php endforeach; ?>
                 </div>
