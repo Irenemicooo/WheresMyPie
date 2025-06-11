@@ -3,7 +3,10 @@ require_once '../includes/config.php';
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 require_once '../includes/auth.php';
-session_start();
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 try {
     $stmt = $pdo->prepare("SELECT * FROM items WHERE status = 'available' ORDER BY created_at DESC");
@@ -31,7 +34,8 @@ try {
                 <div class="item-card">
                     <h3><?= htmlspecialchars($item['title']) ?></h3>
                     <?php if (!empty($item['photo_path'])): ?>
-                        <img src="../uploads/items/<?= htmlspecialchars($item['photo_path']) ?>" alt="Item photo" width="150">
+                        <img src="<?= BASE_URL . '/' . htmlspecialchars($item['photo_path']) ?>" 
+                             alt="<?= htmlspecialchars($item['title']) ?>" width="150">
                     <?php endif; ?>
                     <p><strong>Category:</strong> <?= htmlspecialchars($item['category']) ?></p>
                     <p><strong>Location:</strong> <?= htmlspecialchars($item['location']) ?></p>
