@@ -39,7 +39,8 @@ try {
 
     <?php if (!empty($item['photo_path'])): ?>
         <div class="item-image">
-            <img src="../<?= htmlspecialchars($item['photo_path']) ?>" alt="Item photo" style="max-width: 400px;">
+            <img src="/<?= htmlspecialchars($item['photo_path']) ?>" 
+                 alt="Item photo" style="max-width: 400px;">
         </div>
     <?php endif; ?>
 

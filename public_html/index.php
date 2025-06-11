@@ -80,7 +80,7 @@ include 'includes/header.php';
             <?php foreach ($recentItems as $item): ?>
                 <div class="item-card">
                     <?php if ($item['photo_path']): ?>
-                        <img src="<?= BASE_URL . '/' . htmlspecialchars($item['photo_path']) ?>" 
+                        <img src="/<?= htmlspecialchars($item['photo_path']) ?>" 
                              alt="<?= htmlspecialchars($item['title']) ?>">
                     <?php endif; ?>
                     <h3><?= htmlspecialchars($item['title']) ?></h3>
