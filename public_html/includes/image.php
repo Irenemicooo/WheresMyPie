@@ -5,10 +5,43 @@ class ImageHandler {
     private $quality = 80;
 
     public function processUpload($file, $targetDir) {
-        $image = $this->loadImage($file['tmp_name']);
-        $image = $this->resize($image);
-        $filename = uniqid() . '.jpg';
-        $this->save($image, $targetDir . $filename);
+        if (!isset($file['error']) || is_array($file['error'])) {
+            throw new RuntimeException('Invalid parameters.');
+        }
+
+        // 檢查檔案大小
+        if ($file['size'] > MAX_FILE_SIZE) {
+            throw new RuntimeException('File too large.');
+        }
+
+        // 檢查 MIME 類型
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        if (false === $ext = array_search(
+            $finfo->file($file['tmp_name']),
+            [
+                'jpg' => 'image/jpeg',
+                'jpeg' => 'image/jpeg',
+                'png' => 'image/png',
+                'gif' => 'image/gif',
+            ],
+            true
+        )) {
+            throw new RuntimeException('Invalid file format.');
+        }
+
+        // 生成唯一檔名
+        $filename = sprintf('%s.%s',
+            uniqid(),
+            $ext
+        );
+
+        if (!move_uploaded_file(
+            $file['tmp_name'],
+            $targetDir . $filename
+        )) {
+            throw new RuntimeException('Failed to move uploaded file.');
+        }
+
         return $filename;
     }
 
