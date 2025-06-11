@@ -80,7 +80,28 @@ try {
         </div>
     <?php endif; ?>
 
+    <?php if ($auth->isLoggedIn() && $_SESSION['user_id'] === $item['user_id']): ?>
+        <?php
+        // Check if item has any claims
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM claims WHERE item_id = ?");
+        $stmt->execute([$item_id]);
+        $hasClaims = $stmt->fetchColumn() > 0;
+        ?>
+        
+        <?php if (!$hasClaims): ?>
+            <button onclick="confirmDelete(<?= $item_id ?>)" class="btn btn-danger">Delete Item</button>
+        <?php endif; ?>
+    <?php endif; ?>
+    
     <p><a href="index.php" class="btn btn-secondary">Back to List</a></p>
 </div>
+
+<script>
+function confirmDelete(itemId) {
+    if (confirm('Are you sure you want to delete this item? This action cannot be undone.')) {
+        window.location.href = `delete.php?id=${itemId}`;
+    }
+}
+</script>
 
 <?php include '../includes/footer.php'; ?>
