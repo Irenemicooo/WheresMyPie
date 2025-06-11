@@ -9,7 +9,16 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 try {
-    $stmt = $pdo->prepare("SELECT * FROM items WHERE status = 'available' ORDER BY created_at DESC");
+    $stmt = $pdo->prepare("
+        SELECT * FROM items 
+        WHERE status = 'available' 
+        AND NOT EXISTS (
+            SELECT 1 FROM claims 
+            WHERE claims.item_id = items.item_id 
+            AND claims.status = 'approved'
+        )
+        ORDER BY created_at DESC
+    ");
     $stmt->execute();
     $items = $stmt->fetchAll();
 } catch (Exception $e) {

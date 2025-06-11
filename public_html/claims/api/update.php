@@ -41,8 +41,27 @@ try {
     }
 
     // Update claim status
-    $stmt = $pdo->prepare("UPDATE claims SET status = ? WHERE claim_id = ?");
-    $stmt->execute([$data['status'], $data['claim_id']]);
+    $pdo->beginTransaction();
+    try {
+        // Update claim status
+        $stmt = $pdo->prepare("UPDATE claims SET status = ? WHERE claim_id = ?");
+        $stmt->execute([$data['status'], $data['claim_id']]);
+
+        // If the claim is approved, update the item status
+        if ($data['status'] === 'approved') {
+            $stmt = $pdo->prepare("
+                UPDATE items i
+                JOIN claims c ON i.item_id = c.item_id
+                SET i.status = 'claimed'
+                WHERE c.claim_id = ?
+            ");
+            $stmt->execute([$data['claim_id']]);
+        }
+        $pdo->commit();
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
 
     $response['success'] = true;
     $response['message'] = 'Status updated successfully';

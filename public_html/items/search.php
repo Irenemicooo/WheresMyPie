@@ -9,7 +9,12 @@ $keyword = $_GET['keyword'] ?? '';
 $category = $_GET['category'] ?? '';
 $status = $_GET['status'] ?? '';
 
-$sql = "SELECT * FROM items WHERE 1=1";
+$sql = "SELECT i.* FROM items i WHERE 1=1 AND i.status = 'available' 
+        AND NOT EXISTS (
+            SELECT 1 FROM claims c 
+            WHERE c.item_id = i.item_id 
+            AND c.status = 'approved'
+        )";
 $params = [];
 
 if (!empty($keyword)) {
