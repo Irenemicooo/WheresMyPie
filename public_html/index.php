@@ -81,7 +81,8 @@ include 'includes/header.php';
                 <div class="item-card">
                     <?php if ($item['photo_path']): ?>
                         <img src="/<?= htmlspecialchars($item['photo_path']) ?>" 
-                             alt="<?= htmlspecialchars($item['title']) ?>">
+                             alt="<?= htmlspecialchars($item['title']) ?>"
+                             style="max-width: 150px; max-height: 150px; object-fit: cover;">
                     <?php endif; ?>
                     <h3><?= htmlspecialchars($item['title']) ?></h3>
                     <p>Found at: <?= htmlspecialchars($item['location']) ?></p>

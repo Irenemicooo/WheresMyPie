@@ -40,7 +40,8 @@ try {
     <?php if (!empty($item['photo_path'])): ?>
         <div class="item-image">
             <img src="/<?= htmlspecialchars($item['photo_path']) ?>" 
-                 alt="Item photo" style="max-width: 400px;">
+                 alt="Item photo" 
+                 style="max-width: 100%; height: auto; max-height: 400px; object-fit: contain;">
         </div>
     <?php endif; ?>
 

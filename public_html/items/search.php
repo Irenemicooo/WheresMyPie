@@ -74,7 +74,9 @@ $items = $stmt->fetchAll();
                     <p><strong>Date Found:</strong> <?= htmlspecialchars($item['date_found']) ?></p>
                     <?php if (!empty($item['photo_path'])): ?>
                         <img src="/<?= htmlspecialchars($item['photo_path']) ?>" 
-                             alt="<?= htmlspecialchars($item['title']) ?>" class="item-photo">
+                             alt="<?= htmlspecialchars($item['title']) ?>" 
+                             class="item-photo"
+                             style="max-width: 150px; max-height: 150px; object-fit: cover;">
                     <?php endif; ?>
                     <p><a href="view.php?id=<?= $item['item_id'] ?>" class="btn btn-sm btn-secondary">View Details</a></p>
                 </div>
