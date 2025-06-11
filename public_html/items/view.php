@@ -14,12 +14,14 @@ $item_id = (int) $_GET['id'];
 
 try {
     $stmt = $pdo->prepare("
-        SELECT i.*, u.username 
+        SELECT i.*, u.username,
+        (SELECT COUNT(*) FROM claims c WHERE c.item_id = i.item_id AND c.status = 'approved') as is_claimed,
+        (SELECT COUNT(*) FROM claims c WHERE c.item_id = i.item_id AND c.user_id = ? AND c.status IN ('pending', 'approved')) as user_claimed
         FROM items i 
         JOIN users u ON i.user_id = u.user_id 
         WHERE i.item_id = ?
     ");
-    $stmt->execute([$item_id]);
+    $stmt->execute([$_SESSION['user_id'] ?? 0, $item_id]);
     $item = $stmt->fetch();
 
     if (!$item) {
@@ -51,7 +53,10 @@ try {
     <p><strong>Date Found:</strong> <?= htmlspecialchars($item['date_found']) ?></p>
     <p><strong>Posted by:</strong> <?= htmlspecialchars($item['username']) ?></p>
 
-    <?php if ($auth->isLoggedIn() && $_SESSION['user_id'] !== $item['user_id']): ?>
+    <?php if ($auth->isLoggedIn() && 
+              $_SESSION['user_id'] !== $item['user_id'] && 
+              !$item['is_claimed'] && 
+              !$item['user_claimed']): ?>
         <a href="../claims/create.php?item_id=<?= $item['item_id'] ?>" class="btn btn-success">I want to claim this</a>
     <?php endif; ?>
 

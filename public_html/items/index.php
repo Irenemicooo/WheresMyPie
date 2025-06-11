@@ -10,14 +10,14 @@ if (session_status() === PHP_SESSION_NONE) {
 
 try {
     $stmt = $pdo->prepare("
-        SELECT * FROM items 
-        WHERE status = 'available' 
+        SELECT i.* FROM items i 
+        WHERE i.status = 'available' 
         AND NOT EXISTS (
-            SELECT 1 FROM claims 
-            WHERE claims.item_id = items.item_id 
-            AND claims.status = 'approved'
+            SELECT 1 FROM claims c 
+            WHERE c.item_id = i.item_id 
+            AND c.status = 'approved'
         )
-        ORDER BY created_at DESC
+        ORDER BY i.created_at DESC
     ");
     $stmt->execute();
     $items = $stmt->fetchAll();

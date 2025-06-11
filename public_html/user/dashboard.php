@@ -9,27 +9,36 @@ $auth = new Auth($pdo);
 $auth->requireLogin();
 
 // Get user's posted items
-$stmt = $pdo->prepare("
-    SELECT i.*, COUNT(c.claim_id) as pending_claims 
-    FROM items i 
-    LEFT JOIN claims c ON i.item_id = c.item_id AND c.status = 'pending'
-    WHERE i.user_id = ?
-    GROUP BY i.item_id
-    ORDER BY i.created_at DESC
-");
-$stmt->execute([$_SESSION['user_id']]);
-$items = $stmt->fetchAll();
+try {
+    $stmt = $pdo->prepare("
+        SELECT i.*, 
+            COUNT(DISTINCT cp.claim_id) as pending_claims,
+            ca.status as approved_status
+        FROM items i 
+        LEFT JOIN claims cp ON i.item_id = cp.item_id AND cp.status = 'pending'
+        LEFT JOIN claims ca ON i.item_id = ca.item_id AND ca.status = 'approved'
+        WHERE i.user_id = ?
+        GROUP BY i.item_id, i.title, i.status, ca.status
+        ORDER BY i.created_at DESC
+    ");
+    $stmt->execute([$_SESSION['user_id']]);
+    $items = $stmt->fetchAll();
 
-// Get user's claims
-$stmt = $pdo->prepare("
-    SELECT c.*, i.title as item_title 
-    FROM claims c 
-    JOIN items i ON c.item_id = i.item_id 
-    WHERE c.user_id = ?
-    ORDER BY c.created_at DESC
-");
-$stmt->execute([$_SESSION['user_id']]);
-$claims = $stmt->fetchAll();
+    // Get user's claims
+    $stmt = $pdo->prepare("
+        SELECT c.*, i.title as item_title 
+        FROM claims c 
+        JOIN items i ON c.item_id = i.item_id 
+        WHERE c.user_id = ?
+        ORDER BY c.created_at DESC
+    ");
+    $stmt->execute([$_SESSION['user_id']]);
+    $claims = $stmt->fetchAll();
+} catch (PDOException $e) {
+    // Handle potential errors
+    echo "Error: " . $e->getMessage();
+    exit;
+}
 
 $pageTitle = 'My Dashboard';
 include '../includes/header.php';
@@ -49,7 +58,7 @@ include '../includes/header.php';
                     <?php foreach ($items as $item): ?>
                         <div class="item-card">
                             <h4><?= htmlspecialchars($item['title']) ?></h4>
-                            <p>Status: <?= htmlspecialchars($item['status']) ?></p>
+                            <p>Status: <?= $item['approved_status'] === 'approved' ? 'Claimed' : htmlspecialchars($item['status']) ?></p>
                             <?php if ($item['pending_claims'] > 0): ?>
                                 <p class="alert alert-info">
                                     <?= $item['pending_claims'] ?> pending claims
