@@ -34,7 +34,7 @@ try {
                 <div class="item-card">
                     <h3><?= htmlspecialchars($item['title']) ?></h3>
                     <?php if (!empty($item['photo_path'])): ?>
-                        <img src="<?= BASE_URL . '/' . htmlspecialchars($item['photo_path']) ?>" 
+                        <img src="/<?= htmlspecialchars($item['photo_path']) ?>" 
                              alt="<?= htmlspecialchars($item['title']) ?>" width="150">
                     <?php endif; ?>
                     <p><strong>Category:</strong> <?= htmlspecialchars($item['category']) ?></p>
