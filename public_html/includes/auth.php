@@ -66,32 +66,38 @@ class Auth {
         $key = 'login_attempts_' . $username;
         $blockKey = 'login_block_time_' . $username;
 
-        // if the user has too many failed attempts, check the block time
+        // 檢查是否被暫時封鎖
         if (isset($_SESSION[$blockKey]) && time() < $_SESSION[$blockKey]) {
             $wait = ceil(($_SESSION[$blockKey] - time()) / 60);
-            return ['success' => false, 'message' => "Too many failed attempts. Try again in $wait minute(s)."];
+            return ['success' => false, 'message' => "帳號已被暫時鎖定，請等待 $wait 分鐘後再試。"];
         }
 
         try {
             $stmt = $this->db->query(
-                "SELECT * FROM users WHERE username = ?",
-                [$username]
+                "SELECT * FROM users WHERE username = ? OR email = ?",
+                [$username, $username]
             );
 
             $user = $stmt->fetch();
 
-            if (!$user || !password_verify($password, $user['password'])) {
+            if (!$user) {
                 $_SESSION[$key] = ($_SESSION[$key] ?? 0) + 1;
-
-                if ($_SESSION[$key] >= 5) {
-                    $_SESSION[$blockKey] = time() + (10 * 60); // 10 minutes block
-                    return ['success' => false, 'message' => 'Too many failed attempts. Login locked for 10 minutes.'];
-                }
-
-                return ['success' => false, 'message' => 'Invalid username or password'];
+                return ['success' => false, 'message' => '找不到此使用者，請確認帳號或email是否正確。'];
             }
 
-            // login successful, reset attempts
+            if (!password_verify($password, $user['password'])) {
+                $_SESSION[$key] = ($_SESSION[$key] ?? 0) + 1;
+                $remainingAttempts = 5 - $_SESSION[$key];
+
+                if ($_SESSION[$key] >= 5) {
+                    $_SESSION[$blockKey] = time() + (10 * 60);
+                    return ['success' => false, 'message' => '登入嘗試次數過多，帳號已被鎖定10分鐘。'];
+                }
+
+                return ['success' => false, 'message' => "密碼錯誤，還剩 {$remainingAttempts} 次嘗試機會。"];
+            }
+
+            // 登入成功，重置嘗試次數
             unset($_SESSION[$key]);
             unset($_SESSION[$blockKey]);
 
@@ -99,12 +105,9 @@ class Auth {
             $_SESSION['username'] = $user['username'];
             $_SESSION['last_login'] = time();
 
-            return ['success' => true, 'message' => 'Login successful'];
+            return ['success' => true, 'message' => '登入成功'];
         } catch (Exception $e) {
-            if (DEBUG) {
-                return ['success' => false, 'message' => $e->getMessage()];
-            }
-            return ['success' => false, 'message' => 'Login failed'];
+            return ['success' => false, 'message' => DEBUG ? $e->getMessage() : '系統錯誤，請稍後再試。'];
         }
     }
 

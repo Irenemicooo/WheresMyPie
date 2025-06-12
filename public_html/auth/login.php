@@ -17,13 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
 
     $auth = new Auth($pdo);
-    if ($auth->login($username_or_email, $password)) {
+    $result = $auth->login($username_or_email, $password);
+    if ($result['success']) {
         $redirect = $_SESSION['redirect_after_login'] ?? '../user/dashboard.php';
         unset($_SESSION['redirect_after_login']);
         header('Location: ' . $redirect);
         exit;
     } else {
-        $errors[] = 'Invalid username/email or password.';
+        $errors[] = $result['message'];
     }
 }
 ?>
