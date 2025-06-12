@@ -32,6 +32,7 @@ try {
                 AND c.user_id = ? 
                 AND c.status IN ('pending', 'approved')
             ), 0) as user_claimed,
+            c.claim_id,
             c.status as claim_status,
             c.description as claim_description,
             c.evidence_img,
@@ -94,7 +95,10 @@ try {
                          alt="Evidence" style="max-width: 300px; height: auto;">
                 </div>
             <?php endif; ?>
-            <a href="/chat/room.php?claim_id=<?= $item['claim_id'] ?>" class="btn btn-primary">Chat with Claimer</a>
+            <?php if (!empty($item['claim_id'])): ?>
+                <a href="/chat/room.php?claim_id=<?= htmlspecialchars($item['claim_id']) ?>" 
+                   class="btn btn-primary">Chat with Claimer</a>
+            <?php endif; ?>
         </div>
     <?php endif; ?>
 
