@@ -22,7 +22,7 @@ try {
         throw new Exception('Missing required fields');
     }
 
-    // 驗證用戶是否為對話參與者
+    // 驗證使用者權限
     $stmt = $pdo->prepare("
         SELECT i.user_id as finder_id, c.user_id as claimer_id
         FROM claims c
@@ -32,20 +32,19 @@ try {
     $stmt->execute([$data['claim_id']]);
     $chat = $stmt->fetch();
 
-    if (!$chat || ($_SESSION['user_id'] !== $chat['finder_id'] && $_SESSION['user_id'] !== $chat['claimer_id'])) {
-        throw new Exception('Not authorized');
+    if (!$chat || ($_SESSION['user_id'] != $chat['finder_id'] && $_SESSION['user_id'] != $chat['claimer_id'])) {
+        throw new Exception('Not authorized to participate in this chat');
     }
 
     // 儲存訊息
     $stmt = $pdo->prepare("
-        INSERT INTO chat_messages (claim_id, user_id, content)
-        VALUES (?, ?, ?)
+        INSERT INTO chat_messages (claim_id, user_id, content, created_at)
+        VALUES (?, ?, ?, NOW())
     ");
-    $stmt->execute([
-        $data['claim_id'],
-        $_SESSION['user_id'],
-        $data['content']
-    ]);
+    
+    if (!$stmt->execute([$data['claim_id'], $_SESSION['user_id'], $data['content']])) {
+        throw new Exception('Failed to save message');
+    }
 
     $response['success'] = true;
     $response['message'] = 'Message sent successfully';

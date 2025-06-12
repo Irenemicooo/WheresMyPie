@@ -57,51 +57,51 @@ include '../includes/header.php';
             <button type="submit" class="btn btn-primary">Send</button>
         </div>
     </form>
-</div>
 
-<script>
-document.getElementById('chatForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const messageInput = document.getElementById('messageInput');
-    const claimId = document.getElementById('claimId').value;
-    const content = messageInput.value.trim();
+    <script>
+    document.getElementById('chatForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const messageInput = document.getElementById('messageInput');
+        const claimId = document.getElementById('claimId').value;
+        const content = messageInput.value.trim();
 
-    if (!content) return;
+        if (!content) return;
 
-    fetch('/chat/api/send.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            claim_id: claimId,
-            content: content
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            messageInput.value = '';
-            loadMessages();
-        } else {
-            alert(data.message);
+        try {
+            const response = await fetch('/chat/api/send.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    claim_id: claimId,
+                    content: content
+                })
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                messageInput.value = '';
+                await loadMessages(); // 立即重新加載消息
+            } else {
+                alert(data.message || 'Failed to send message');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to send message');
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to send message');
     });
-});
 
-function loadMessages() {
-    const claimId = document.getElementById('claimId').value;
-    fetch(`/chat/api/fetch.php?claim_id=${claimId}`)
-        .then(response => response.json())
-        .then(data => {
+    async function loadMessages() {
+        const claimId = document.getElementById('claimId').value;
+        try {
+            const response = await fetch(`/chat/api/fetch.php?claim_id=${claimId}`);
+            const data = await response.json();
+            
             if (data.success) {
                 const chatMessages = document.getElementById('chatMessages');
                 chatMessages.innerHTML = data.data.map(message => `
-                    <div class="message ${message.is_mine ? 'mine' : 'other'}">
+                    <div class="message ${message.user_id == <?= $_SESSION['user_id'] ?> ? 'mine' : 'other'}">
                         <strong>${message.username}:</strong>
                         <p>${message.content}</p>
                         <small>${new Date(message.created_at).toLocaleString()}</small>
@@ -109,13 +109,17 @@ function loadMessages() {
                 `).join('');
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
-        });
-}
+        } catch (error) {
+            console.error('Error loading messages:', error);
+        }
+    }
 
-// 載入初始訊息
-loadMessages();
-// 每5秒更新一次
-setInterval(loadMessages, 5000);
-</script>
+    // 初始加載消息
+    loadMessages();
+
+    // 每5秒更新一次
+    setInterval(loadMessages, 5000);
+    </script>
+</div>
 
 <?php include '../includes/footer.php'; ?>
