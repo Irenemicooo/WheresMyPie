@@ -94,6 +94,7 @@ try {
                          alt="Evidence" style="max-width: 300px; height: auto;">
                 </div>
             <?php endif; ?>
+            <a href="/chat/room.php?claim_id=<?= $item['claim_id'] ?>" class="btn btn-primary">Chat with Claimer</a>
         </div>
     <?php endif; ?>
 

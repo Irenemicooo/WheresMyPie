@@ -4,40 +4,39 @@ require_once '../../includes/db.php';
 require_once '../../includes/functions.php';
 require_once '../../includes/auth.php';
 
-header('Content-Type: application/json');
-session_start();
-
-$response = ['success' => false, 'data' => null, 'message' => ''];
-
-if (!isset($_SESSION['user_id'])) {
-    http_response_code(401);
-    $response['message'] = 'Unauthorized';
-    exit(json_encode($response));
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
+header('Content-Type: application/json');
+$response = ['success' => false, 'message' => ''];
+
 try {
+    if (!isset($_SESSION['user_id'])) {
+        throw new Exception('Unauthorized');
+    }
+
     $data = json_decode(file_get_contents('php://input'), true);
     
     if (empty($data['claim_id']) || empty($data['content'])) {
-        throw new Exception('Claim ID and message content are required');
+        throw new Exception('Missing required fields');
     }
 
-    // Verify user is part of this chat
+    // 驗證用戶是否為對話參與者
     $stmt = $pdo->prepare("
-        SELECT c.*, i.user_id as finder_id 
+        SELECT i.user_id as finder_id, c.user_id as claimer_id
         FROM claims c
         JOIN items i ON c.item_id = i.item_id
-        WHERE c.claim_id = ?
+        WHERE c.claim_id = ? AND c.status = 'approved'
     ");
     $stmt->execute([$data['claim_id']]);
-    $claim = $stmt->fetch();
+    $chat = $stmt->fetch();
 
-    if (!$claim || ($_SESSION['user_id'] !== $claim['user_id'] && 
-                    $_SESSION['user_id'] !== $claim['finder_id'])) {
-        throw new Exception('Not authorized to send messages in this chat');
+    if (!$chat || ($_SESSION['user_id'] !== $chat['finder_id'] && $_SESSION['user_id'] !== $chat['claimer_id'])) {
+        throw new Exception('Not authorized');
     }
 
-    // Insert message
+    // 儲存訊息
     $stmt = $pdo->prepare("
         INSERT INTO chat_messages (claim_id, user_id, content)
         VALUES (?, ?, ?)
@@ -49,13 +48,9 @@ try {
     ]);
 
     $response['success'] = true;
-    $response['data'] = [
-        'message_id' => $pdo->lastInsertId(),
-        'timestamp' => date('Y-m-d H:i:s')
-    ];
+    $response['message'] = 'Message sent successfully';
 
 } catch (Exception $e) {
-    http_response_code(400);
     $response['message'] = DEBUG ? $e->getMessage() : 'Failed to send message';
 }
 

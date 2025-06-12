@@ -3,7 +3,10 @@ require_once '../includes/config.php';
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 require_once '../includes/auth.php';
-session_start();
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $auth = new Auth($pdo);
 $auth->requireLogin();
@@ -55,5 +58,64 @@ include '../includes/header.php';
         </div>
     </form>
 </div>
+
+<script>
+document.getElementById('chatForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const messageInput = document.getElementById('messageInput');
+    const claimId = document.getElementById('claimId').value;
+    const content = messageInput.value.trim();
+
+    if (!content) return;
+
+    fetch('/chat/api/send.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            claim_id: claimId,
+            content: content
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            messageInput.value = '';
+            loadMessages();
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to send message');
+    });
+});
+
+function loadMessages() {
+    const claimId = document.getElementById('claimId').value;
+    fetch(`/chat/api/fetch.php?claim_id=${claimId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML = data.data.map(message => `
+                    <div class="message ${message.is_mine ? 'mine' : 'other'}">
+                        <strong>${message.username}:</strong>
+                        <p>${message.content}</p>
+                        <small>${new Date(message.created_at).toLocaleString()}</small>
+                    </div>
+                `).join('');
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
+}
+
+// 載入初始訊息
+loadMessages();
+// 每5秒更新一次
+setInterval(loadMessages, 5000);
+</script>
 
 <?php include '../includes/footer.php'; ?>
