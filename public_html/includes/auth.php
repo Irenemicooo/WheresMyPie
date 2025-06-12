@@ -66,10 +66,10 @@ class Auth {
         $key = 'login_attempts_' . $username;
         $blockKey = 'login_block_time_' . $username;
 
-        // 檢查是否被暫時封鎖
+        // Check if temporarily blocked
         if (isset($_SESSION[$blockKey]) && time() < $_SESSION[$blockKey]) {
             $wait = ceil(($_SESSION[$blockKey] - time()) / 60);
-            return ['success' => false, 'message' => "帳號已被暫時鎖定，請等待 $wait 分鐘後再試。"];
+            return ['success' => false, 'message' => "Your account is temporarily locked. Please try again in $wait minutes."];
         }
 
         try {
@@ -82,7 +82,7 @@ class Auth {
 
             if (!$user) {
                 $_SESSION[$key] = ($_SESSION[$key] ?? 0) + 1;
-                return ['success' => false, 'message' => '找不到此使用者，請確認帳號或email是否正確。'];
+                return ['success' => false, 'message' => 'User not found. Please check your username or email.'];
             }
 
             if (!password_verify($password, $user['password'])) {
@@ -91,13 +91,13 @@ class Auth {
 
                 if ($_SESSION[$key] >= 5) {
                     $_SESSION[$blockKey] = time() + (10 * 60);
-                    return ['success' => false, 'message' => '登入嘗試次數過多，帳號已被鎖定10分鐘。'];
+                    return ['success' => false, 'message' => 'Too many failed login attempts. Your account has been locked for 10 minutes.'];
                 }
 
-                return ['success' => false, 'message' => "密碼錯誤，還剩 {$remainingAttempts} 次嘗試機會。"];
+                return ['success' => false, 'message' => "Incorrect password. You have {$remainingAttempts} attempt(s) remaining."];
             }
 
-            // 登入成功，重置嘗試次數
+            // Login successful, reset attempts
             unset($_SESSION[$key]);
             unset($_SESSION[$blockKey]);
 
@@ -105,9 +105,9 @@ class Auth {
             $_SESSION['username'] = $user['username'];
             $_SESSION['last_login'] = time();
 
-            return ['success' => true, 'message' => '登入成功'];
+            return ['success' => true, 'message' => 'Login successful'];
         } catch (Exception $e) {
-            return ['success' => false, 'message' => DEBUG ? $e->getMessage() : '系統錯誤，請稍後再試。'];
+            return ['success' => false, 'message' => DEBUG ? $e->getMessage() : 'A system error occurred. Please try again later.'];
         }
     }
 
@@ -163,6 +163,7 @@ class Auth {
             );
             $user = $stmt->fetch();
 
+            // Check current password
             if (!$user || !password_verify($currentPassword, $user['password'])) {
                 return ['success' => false, 'message' => 'Current password is incorrect'];
             }
@@ -171,6 +172,7 @@ class Auth {
                 return ['success' => false, 'message' => 'Invalid new password format'];
             }
 
+            // Update password
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
             $this->db->query(
                 "UPDATE users SET password = ? WHERE user_id = ?",
@@ -186,7 +188,10 @@ class Auth {
         }
     }
 
-    // 新增CSRF令牌生成
+    /**
+     * Generate CSRF token
+     * @return string
+     */
     public function generateCSRFToken() {
         if (!isset($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -194,22 +199,33 @@ class Auth {
         return $_SESSION['csrf_token'];
     }
 
-    // 新增CSRF令牌驗證
+    /**
+     * Verify CSRF token
+     * @param string $token
+     * @return boolean
+     */
     public function verifyCSRFToken($token) {
         return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
     }
 
-    // 新增登入嘗試限制
+    /**
+     * Check login attempts
+     * @param string $username
+     * @return boolean
+     */
     private function checkLoginAttempts($username) {
         $key = 'login_attempts_' . $username;
         $attempts = $_SESSION[$key] ?? 0;
-    
+
         if ($attempts >= 5) {
-            return false; // 已達最大嘗試次數
+            return false;
         }
         return true;
     }
 
+    /**
+     * Require login to access page
+     */
     public function requireLogin() {
         if (!$this->isLoggedIn()) {
             $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
@@ -218,6 +234,10 @@ class Auth {
         }
     }
 
+    /**
+     * Get current user ID
+     * @return int|null
+     */
     public function getCurrentUserId() {
         return $_SESSION['user_id'] ?? null;
     }
@@ -225,4 +245,3 @@ class Auth {
 
 // Create global auth instance
 $auth = new Auth();
-?>
