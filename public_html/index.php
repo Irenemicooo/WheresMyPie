@@ -16,6 +16,9 @@ $stats = [
     'active_users' => $pdo->query("SELECT COUNT(DISTINCT user_id) FROM items")->fetchColumn()
 ];
 
+// Get selected category from query parameters
+$category = $_GET['category'] ?? '';
+
 // Get categories
 $stmt = $pdo->query("SELECT DISTINCT category FROM items ORDER BY category");
 $categories = $stmt->fetchAll(PDO::FETCH_COLUMN);
@@ -52,16 +55,16 @@ include 'includes/header.php';
                     <input type="text" name="keyword" placeholder="Search lost items...">
                     <select name="category">
                         <option value="">All Categories</option>
-                        <option value="Food" <?= $category == 'Food' ? 'selected' : '' ?>>Food</option>
-                        <option value="Electronics" <?= $category == 'Electronics' ? 'selected' : '' ?>>Electronics</option>
-                        <option value="Cards & IDs" <?= $category == 'Cards & IDs' ? 'selected' : '' ?>>Cards & IDs</option>
-                        <option value="Wallets & Cash" <?= $category == 'Wallets & Cash' ? 'selected' : '' ?>>Wallets & Cash</option>
-                        <option value="Keys" <?= $category == 'Keys' ? 'selected' : '' ?>>Keys</option>
-                        <option value="Clothing & Accessories" <?= $category == 'Clothing & Accessories' ? 'selected' : '' ?>>Clothing & Accessories</option>
-                        <option value="Bags" <?= $category == 'Bags' ? 'selected' : '' ?>>Bags</option>
-                        <option value="Personal Items" <?= $category == 'Personal Items' ? 'selected' : '' ?>>Personal Items</option>
-                        <option value="Sports Equipment" <?= $category == 'Sports Equipment' ? 'selected' : '' ?>>Sports Equipment</option>
-                        <option value="Others" <?= $category == 'Others' ? 'selected' : '' ?>>Others</option>
+                        <option value="Food" <?= $category === 'Food' ? 'selected' : '' ?>>Food</option>
+                        <option value="Electronics" <?= $category === 'Electronics' ? 'selected' : '' ?>>Electronics</option>
+                        <option value="Cards & IDs" <?= $category === 'Cards & IDs' ? 'selected' : '' ?>>Cards & IDs</option>
+                        <option value="Wallets & Cash" <?= $category === 'Wallets & Cash' ? 'selected' : '' ?>>Wallets & Cash</option>
+                        <option value="Keys" <?= $category === 'Keys' ? 'selected' : '' ?>>Keys</option>
+                        <option value="Clothing & Accessories" <?= $category === 'Clothing & Accessories' ? 'selected' : '' ?>>Clothing & Accessories</option>
+                        <option value="Bags" <?= $category === 'Bags' ? 'selected' : '' ?>>Bags</option>
+                        <option value="Personal Items" <?= $category === 'Personal Items' ? 'selected' : '' ?>>Personal Items</option>
+                        <option value="Sports Equipment" <?= $category === 'Sports Equipment' ? 'selected' : '' ?>>Sports Equipment</option>
+                        <option value="Others" <?= $category === 'Others' ? 'selected' : '' ?>>Others</option>
                     </select>
                     <button type="submit">Search</button>
                 </div>
