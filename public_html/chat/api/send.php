@@ -33,16 +33,22 @@ try {
     $chat = $stmt->fetch();
 
     if (!$chat || ($_SESSION['user_id'] != $chat['finder_id'] && $_SESSION['user_id'] != $chat['claimer_id'])) {
-        throw new Exception('Not authorized to participate in this chat');
+        throw new Exception('Not authorized to send messages in this chat');
     }
 
     // 儲存訊息
     $stmt = $pdo->prepare("
-        INSERT INTO chat_messages (claim_id, user_id, content, created_at)
-        VALUES (?, ?, ?, NOW())
+        INSERT INTO chat_messages (claim_id, user_id, content)
+        VALUES (?, ?, ?)
     ");
     
-    if (!$stmt->execute([$data['claim_id'], $_SESSION['user_id'], $data['content']])) {
+    $result = $stmt->execute([
+        $data['claim_id'],
+        $_SESSION['user_id'],
+        trim($data['content'])
+    ]);
+
+    if (!$result) {
         throw new Exception('Failed to save message');
     }
 
