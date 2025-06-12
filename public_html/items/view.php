@@ -17,7 +17,8 @@ $item_id = (int) $_GET['id'];
 
 try {
     $stmt = $pdo->prepare("
-        SELECT i.*, u.username,
+        SELECT i.*, 
+            u.username,
             COALESCE((
                 SELECT COUNT(*) 
                 FROM claims c 
@@ -31,15 +32,14 @@ try {
                 AND c.user_id = ? 
                 AND c.status IN ('pending', 'approved')
             ), 0) as user_claimed,
-            (
-                SELECT c.status
-                FROM claims c 
-                WHERE c.item_id = i.item_id 
-                AND c.status = 'approved'
-                LIMIT 1
-            ) as claim_status
+            c.status as claim_status,
+            c.description as claim_description,
+            c.evidence_img,
+            uc.username as claimer_name
         FROM items i 
         JOIN users u ON i.user_id = u.user_id 
+        LEFT JOIN claims c ON i.item_id = c.item_id AND c.status = 'approved'
+        LEFT JOIN users uc ON c.user_id = uc.user_id
         WHERE i.item_id = ?
     ");
     $stmt->execute([$_SESSION['user_id'] ?? 0, $item_id]);
@@ -81,13 +81,13 @@ try {
         <a href="../claims/create.php?item_id=<?= $item['item_id'] ?>" class="btn btn-success">I want to claim this</a>
     <?php endif; ?>
 
-    <!-- 添加認領資訊區塊 -->
+    <!-- 認領資訊區塊 -->
     <?php if ($auth->isLoggedIn() && $_SESSION['user_id'] === $item['user_id'] && ($item['claim_status'] ?? '') === 'approved'): ?>
         <div class="claim-info">
             <h3>Claim Information</h3>
-            <p><strong>Claimed by:</strong> <?= htmlspecialchars($item['claimer_name']) ?></p>
-            <p><strong>Claim Description:</strong> <?= nl2br(htmlspecialchars($item['claim_description'])) ?></p>
-            <?php if ($item['evidence_img']): ?>
+            <p><strong>Claimed by:</strong> <?= htmlspecialchars($item['claimer_name'] ?? 'Unknown') ?></p>
+            <p><strong>Claim Description:</strong> <?= nl2br(htmlspecialchars($item['claim_description'] ?? 'No description provided')) ?></p>
+            <?php if (!empty($item['evidence_img'])): ?>
                 <div class="evidence-image">
                     <h4>Evidence Photo:</h4>
                     <img src="/<?= htmlspecialchars($item['evidence_img']) ?>" 
