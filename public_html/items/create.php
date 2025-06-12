@@ -90,7 +90,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <textarea name="description" id="description"><?= htmlspecialchars($description) ?></textarea>
 
         <label for="category">Category *</label>
-        <input type="text" name="category" id="category" value="<?= htmlspecialchars($category) ?>" required>
+        <select name="category" id="category" required>
+            <option value="">Select a category</option>
+            <option value="Food" <?= $category == 'Food' ? 'selected' : '' ?>>Food</option>
+            <option value="Electronics" <?= $category == 'Electronics' ? 'selected' : '' ?>>Electronics</option>
+            <option value="Cards & IDs" <?= $category == 'Cards & IDs' ? 'selected' : '' ?>>Cards & IDs</option>
+            <option value="Wallets & Cash" <?= $category == 'Wallets & Cash' ? 'selected' : '' ?>>Wallets & Cash</option>
+            <option value="Keys" <?= $category == 'Keys' ? 'selected' : '' ?>>Keys</option>
+            <option value="Clothing & Accessories" <?= $category == 'Clothing & Accessories' ? 'selected' : '' ?>>Clothing & Accessories</option>
+            <option value="Bags" <?= $category == 'Bags' ? 'selected' : '' ?>>Bags</option>
+            <option value="Personal Items" <?= $category == 'Personal Items' ? 'selected' : '' ?>>Personal Items</option>
+            <option value="Sports Equipment" <?= $category == 'Sports Equipment' ? 'selected' : '' ?>>Sports Equipment</option>
+            <option value="Others" <?= $category == 'Others' ? 'selected' : '' ?>>Others</option>
+        </select>
 
         <label for="location">Location Found *</label>
         <input type="text" name="location" id="location" value="<?= htmlspecialchars($location) ?>" required>
