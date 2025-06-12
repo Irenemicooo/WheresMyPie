@@ -3,7 +3,10 @@ require_once '../includes/config.php';
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 require_once '../includes/auth.php';
-session_start();
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     echo "Invalid item ID.";
@@ -15,17 +18,24 @@ $item_id = (int) $_GET['id'];
 try {
     $stmt = $pdo->prepare("
         SELECT i.*, u.username,
-            c.description as claim_description,
-            c.evidence_img,
-            c.status as claim_status,
-            uc.username as claimer_name
+            COALESCE((
+                SELECT COUNT(*) 
+                FROM claims c 
+                WHERE c.item_id = i.item_id 
+                AND c.status = 'approved'
+            ), 0) as is_claimed,
+            COALESCE((
+                SELECT COUNT(*) 
+                FROM claims c 
+                WHERE c.item_id = i.item_id 
+                AND c.user_id = ? 
+                AND c.status IN ('pending', 'approved')
+            ), 0) as user_claimed
         FROM items i 
         JOIN users u ON i.user_id = u.user_id 
-        LEFT JOIN claims c ON i.item_id = c.item_id AND c.status = 'approved'
-        LEFT JOIN users uc ON c.user_id = uc.user_id
         WHERE i.item_id = ?
     ");
-    $stmt->execute([$item_id]);
+    $stmt->execute([$_SESSION['user_id'] ?? 0, $item_id]);
     $item = $stmt->fetch();
 
     if (!$item) {
