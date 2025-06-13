@@ -4,8 +4,6 @@ This document lists all the team members who have contributed to the **Where's M
 
 ## Team Name: TreeNoPie 🌳🥧
 
----
-
 ### Member 1
 - **Name**: 陳品妤 Phoebe
 - **Role**: Project Coordinator & Feature Designer
