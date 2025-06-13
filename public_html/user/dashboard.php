@@ -106,6 +106,7 @@ include '../includes/header.php';
     <div class="dashboard-actions">
         <a href="../items/create.php" class="btn btn-primary">Report Found Item</a>
         <a href="../items/search.php" class="btn btn-secondary">Search Lost Items</a>
+        <a href="profile.php" class="btn btn-info">Edit Profile Settings</a>
     </div>
 </div>
 

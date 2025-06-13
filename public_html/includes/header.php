@@ -51,6 +51,7 @@ if (!isset($page_title)) {
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <a href="<?= BASE_URL ?>/items/create.php">Report Found</a>
                     <a href="<?= BASE_URL ?>/user/dashboard.php">Dashboard</a>
+                    <a href="<?= BASE_URL ?>/user/profile.php">Profile Settings</a>
                     <a href="<?= BASE_URL ?>/auth/logout.php">Logout</a>
                 <?php else: ?>
                     <a href="<?= BASE_URL ?>/auth/login.php">Login</a>
