@@ -4,6 +4,8 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     phone VARCHAR(20),
+    profile_photo VARCHAR(255),
+    contact_visibility VARCHAR(10) DEFAULT 'none',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -15,7 +17,7 @@ CREATE TABLE items (
     location VARCHAR(100) NOT NULL,
     date_found DATE NOT NULL,
     photo_path VARCHAR(255),
-    status ENUM('available', 'claimed', 'returned') DEFAULT 'available',
+    status ENUM('available', 'claimed') DEFAULT 'available',
     user_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
