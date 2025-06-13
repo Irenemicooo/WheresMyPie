@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Update contact visibility
         if (isset($_POST['contact_visibility'])) {
             $updates[] = "contact_visibility = ?";
-            $params[] = $_POST['contact_visibility'];
+            $params[] = $_POST['contact_visibility'] ?: 'none'; // Set default value if empty
         }
 
         if (!empty($updates)) {
