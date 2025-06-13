@@ -44,50 +44,139 @@ include '../includes/header.php';
 <div class="container">
     <h2>Claim Details</h2>
     
-    <div class="claim-details">
-        <h3>Item: <?= htmlspecialchars($claim['item_title']) ?></h3>
-        
-        <?php if (!empty($claim['photo_path'])): ?>
-            <div class="item-image">
-                <img src="/<?= htmlspecialchars($claim['photo_path']) ?>" 
-                     alt="Item photo" style="max-width: 300px; height: auto;">
-            </div>
-        <?php endif; ?>
+    <div class="claim-details-grid">
+        <!-- Item Information Section -->
+        <section class="item-info-section card">
+            <h3 class="section-title">Found Item Information</h3>
+            <div class="item-details">
+                <h4><?= htmlspecialchars($claim['item_title']) ?></h4>
+                
+                <?php if (!empty($claim['photo_path'])): ?>
+                    <div class="item-image">
+                        <img src="/<?= htmlspecialchars($claim['photo_path']) ?>" 
+                             alt="Item photo" style="max-width: 300px; height: auto;">
+                    </div>
+                <?php endif; ?>
 
-        <div class="claim-info">
-            <p><strong>Status:</strong> <?= ucfirst(htmlspecialchars($claim['status'])) ?></p>
-            <p><strong>Found by:</strong> <?= htmlspecialchars($claim['finder_name']) ?></p>
-            <p><strong>Location Found:</strong> <?= htmlspecialchars($claim['location']) ?></p>
-            <p><strong>Date Found:</strong> <?= htmlspecialchars($claim['date_found']) ?></p>
-            <p><strong>Your Description:</strong></p>
-            <p><?= nl2br(htmlspecialchars($claim['description'])) ?></p>
-            
-            <?php if (!empty($claim['evidence_img'])): ?>
-                <div class="evidence-image">
-                    <h4>Your Evidence Photo:</h4>
-                    <img src="/<?= htmlspecialchars($claim['evidence_img']) ?>" 
-                         alt="Evidence photo" style="max-width: 300px; height: auto;">
+                <div class="item-info">
+                    <p><strong>Found by:</strong> <?= htmlspecialchars($claim['finder_name']) ?></p>
+                    <p><strong>Location Found:</strong> <?= htmlspecialchars($claim['location']) ?></p>
+                    <p><strong>Date Found:</strong> <?= htmlspecialchars($claim['date_found']) ?></p>
                 </div>
-            <?php endif; ?>
-        </div>
+            </div>
+        </section>
 
-        <?php if ($claim['status'] === 'approved'): ?>
-            <div class="contact-info">
-                <h4>Finder's Contact Information</h4>
-                <p><strong>Email:</strong> <?= htmlspecialchars($claim['finder_email']) ?></p>
-                <?php if (!empty($claim['finder_phone'])): ?>
-                    <p><strong>Phone:</strong> <?= htmlspecialchars($claim['finder_phone']) ?></p>
+        <!-- Claim Information Section -->
+        <section class="claim-info-section card">
+            <h3 class="section-title">Your Claim Information</h3>
+            <div class="claim-status">
+                <p><strong>Status:</strong> 
+                    <span class="status-badge <?= $claim['status'] ?>">
+                        <?= ucfirst(htmlspecialchars($claim['status'])) ?>
+                    </span>
+                </p>
+                <p><strong>Your Description:</strong></p>
+                <div class="claim-description">
+                    <?= nl2br(htmlspecialchars($claim['description'])) ?>
+                </div>
+                
+                <?php if (!empty($claim['evidence_img'])): ?>
+                    <div class="evidence-image">
+                        <h4>Your Evidence Photo:</h4>
+                        <img src="/<?= htmlspecialchars($claim['evidence_img']) ?>" 
+                             alt="Evidence photo" style="max-width: 300px; height: auto;">
+                    </div>
                 <?php endif; ?>
             </div>
-        <?php endif; ?>
-        
-        <?php if ($claim['status'] === 'approved'): ?>
-            <a href="../chat/room.php?claim_id=<?= $claim['claim_id'] ?>" 
-               class="btn btn-primary">Chat with Finder</a>
-        <?php endif; ?>
-        
+
+            <?php if ($claim['status'] === 'approved'): ?>
+                <div class="contact-info card">
+                    <h4>Finder's Contact Information</h4>
+                    <p><strong>Email:</strong> <?= htmlspecialchars($claim['finder_email']) ?></p>
+                    <?php if (!empty($claim['finder_phone'])): ?>
+                        <p><strong>Phone:</strong> <?= htmlspecialchars($claim['finder_phone']) ?></p>
+                    <?php endif; ?>
+                </div>
+
+                <div class="action-buttons">
+                    <a href="../chat/room.php?claim_id=<?= $claim['claim_id'] ?>" 
+                       class="btn btn-primary">Chat with Finder</a>
+                </div>
+            <?php endif; ?>
+        </section>
+    </div>
+    
+    <div class="bottom-actions">
         <a href="/user/dashboard.php" class="btn btn-secondary">Back to Dashboard</a>
     </div>
 </div>
+
+<style>
+.claim-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.section-title {
+    color: #2c3e50;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-weight: bold;
+}
+
+.status-badge.pending {
+    background-color: #ffd700;
+    color: #000;
+}
+
+.status-badge.approved {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.status-badge.rejected {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.claim-description {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+.contact-info {
+    background: #e9ecef;
+    margin-top: 1rem;
+}
+
+.action-buttons {
+    margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .claim-details-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 
 <?php include '../includes/footer.php'; ?>
