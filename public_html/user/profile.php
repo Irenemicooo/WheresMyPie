@@ -22,10 +22,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $updates = [];
         $params = [];
 
-        // Update email if changed
+        // Update email if changed and valid
         if (!empty($_POST['email']) && $_POST['email'] !== $user['email']) {
             if (!validateEmail($_POST['email'])) {
                 throw new Exception('Invalid email format');
+            }
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ? AND user_id != ?");
+            $stmt->execute([$_POST['email'], $_SESSION['user_id']]);
+            if ($stmt->fetchColumn() > 0) {
+                throw new Exception('Email already in use');
             }
             $updates[] = "email = ?";
             $params[] = $_POST['email'];
@@ -33,28 +38,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Update phone if changed
         if (isset($_POST['phone']) && $_POST['phone'] !== $user['phone']) {
+            // Add basic phone validation if needed
             $updates[] = "phone = ?";
             $params[] = $_POST['phone'] ?: null;
         }
 
-        // Handle password change
-        if (!empty($_POST['new_password'])) {
-            if (!validatePassword($_POST['new_password'])) {
-                throw new Exception('Password must be at least 8 characters and contain uppercase, lowercase, and numbers');
-            }
-            if ($_POST['new_password'] !== $_POST['confirm_password']) {
-                throw new Exception('Passwords do not match');
-            }
-            $updates[] = "password = ?";
-            $params[] = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
-        }
-
-        // Handle profile photo upload
-        if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = '../uploads/profiles/';
-            $photo_path = 'uploads/profiles/' . uploadFile($_FILES['profile_photo'], $uploadDir);
-            $updates[] = "profile_photo = ?";
-            $params[] = $photo_path;
+        // Update contact visibility
+        if (isset($_POST['contact_visibility'])) {
+            $updates[] = "contact_visibility = ?";
+            $params[] = $_POST['contact_visibility'];
         }
 
         if (!empty($updates)) {
@@ -62,12 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sql = "UPDATE users SET " . implode(", ", $updates) . " WHERE user_id = ?";
             $stmt = $pdo->prepare($sql);
             $stmt->execute($params);
-            $success = true;
             setFlashMessage('success', 'Profile updated successfully');
-            header('Location: profile.php');
-            exit;
+            redirect('/user/profile.php');
         }
-
     } catch (Exception $e) {
         $errors[] = $e->getMessage();
     }
@@ -117,6 +106,14 @@ include '../includes/header.php';
             <label for="phone">Phone Number (Optional)</label>
             <input type="tel" name="phone" id="phone" 
                    value="<?= htmlspecialchars($user['phone'] ?? '') ?>">
+        </div>
+
+        <div class="form-group">
+            <label for="contact_visibility">Contact Visibility</label>
+            <select name="contact_visibility" id="contact_visibility">
+                <option value="public" <?= $user['contact_visibility'] === 'public' ? 'selected' : '' ?>>Public</option>
+                <option value="private" <?= $user['contact_visibility'] === 'private' ? 'selected' : '' ?>>Private</option>
+            </select>
         </div>
 
         <fieldset class="password-change">
