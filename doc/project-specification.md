@@ -120,13 +120,16 @@ erDiagram
 
 #### User
 
-| Column       | Type         | Key         |
-|--------------|--------------|-------------|
-| user_id      | INT, AUTO PK | PK          |
-| username     | VARCHAR(50)  | UNIQUE      |
-| password     | VARCHAR(255) |             |
-| phone        | VARCHAR(20)  |             |
-| created_at   | DATETIME     |             |
+| Column            | Type         | Key         |
+|------------------|--------------|-------------|
+| user_id          | INT, AUTO PK | PK          |
+| username         | VARCHAR(50)  | UNIQUE      |
+| password         | VARCHAR(255) |             |
+| email            | VARCHAR(100) | UNIQUE      |
+| phone            | VARCHAR(20)  |             |
+| profile_photo    | VARCHAR(255) |             |
+| contact_visibility| VARCHAR(10)  |             |
+| created_at       | TIMESTAMP    |             |
 
 #### Item
 
@@ -139,9 +142,9 @@ erDiagram
 | location     | VARCHAR(100) |             |
 | date_found   | DATE         |             |
 | photo_path   | VARCHAR(255) |             |
-| status       | ENUM         |             |
+| status       | ENUM         | available, claimed |
 | user_id      | INT          | FK → User   |
-| created_at   | DATETIME     |             |
+| created_at   | TIMESTAMP    |             |
 
 #### Claim
 
@@ -152,8 +155,8 @@ erDiagram
 | user_id      | INT          | FK → User   |
 | description  | TEXT         |             |
 | evidence_img | VARCHAR(255) |             |
-| status       | ENUM         |             |
-| created_at   | DATETIME     |             |
+| status       | ENUM         | pending, approved, rejected |
+| created_at   | TIMESTAMP    |             |
 
 #### ChatMessage
 
@@ -163,7 +166,7 @@ erDiagram
 | claim_id     | INT          | FK → Claim  |
 | user_id      | INT          | FK → User   |
 | content      | TEXT         |             |
-| timestamp    | DATETIME     |             |
+| created_at   | TIMESTAMP    |             |
 
 ### c. Normalization (3NF Justification)
 
