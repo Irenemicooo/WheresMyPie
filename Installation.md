@@ -17,19 +17,19 @@ This guide will walk you through the installation process of Where's My Pie? Los
 - [Final Steps](#final-steps)
 - [Installation Complete](#installation-complete)
 
-## 📦 Prerequisites
+## Prerequisites
 
 ### Hardware Requirements
-- 📱 Raspberry Pi Zero 2W
-- 💾 16GB+ microSD card (Class 10 recommended)
-- 🔌 5V/2A USB power supply
+- Raspberry Pi Zero 2W
+- 16GB+ microSD card (Class 10 recommended)
+- 5V/2A USB power supply
 
 ### Software Requirements
-- 📥 DietPi image file
-- 📝 Text editor (e.g., Notepad++)
-- 📟 SSH client (e.g., PuTTY)
+- DietPi image file
+- Text editor (e.g., Notepad++)
+- SSH client (e.g., PuTTY)
 
-## 🚀 Installation Steps
+## Installation Steps
 
 ### Step 1️⃣ - System Preparation
 
@@ -299,7 +299,7 @@ This guide will walk you through the installation process of Where's My Pie? Los
    sudo systemctl reload apache2
    ```
 
-## ✅ Verification
+## Verification
 
 ### Step 6️⃣ - Test the Installation
 
@@ -352,7 +352,7 @@ This guide will walk you through the installation process of Where's My Pie? Los
    # drwxr-xr-x www-data www-data profiles
    ```
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Issues and Solutions
 
@@ -438,7 +438,7 @@ reboot -f
 # 4. After reboot, remove 'init=/bin/sh' from cmdline.txt
 ```
 
-## 🔐 Security Hardening
+## Security Hardening
 
 ### Additional Security Steps (Recommended)
 
@@ -474,7 +474,7 @@ ServerTokens Prod
 ServerSignature Off
 ```
 
-## 📝 Final Steps
+## Final Steps
 
 1. **Remove Test Files**: Clean up any test PHP files created during installation
 2. **Set Up Backups**: Configure regular database backups

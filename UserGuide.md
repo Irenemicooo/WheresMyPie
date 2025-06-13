@@ -1,8 +1,6 @@
-# Where's My Pie? User Guide 📱
+# Where's My Pie? User Guide
 
 This guide helps users understand how to register, report found items, claim lost items, and communicate within the system.
-
----
 
 ## Table of Contents
 
@@ -21,8 +19,6 @@ This guide helps users understand how to register, report found items, claim los
   - [Contact Information](#contact-information)
 - [Tips & Best Practices](#tips--best-practices-)
 - [Need Help?](#need-help-)
-
----
 
 ## Getting Started
 
@@ -50,8 +46,6 @@ This guide helps users understand how to register, report found items, claim los
   - Change your password
   - Adjust visibility of contact information
   - Upload a profile photo (optional)
-
----
 
 ## Core Features
 
@@ -99,8 +93,6 @@ This guide helps users understand how to register, report found items, claim los
 - View your submitted claims and their statuses.
 - Chat with the finder once your claim is approved.
 
----
-
 ## Dashboard Features
 
 ### My Posted Items
@@ -113,8 +105,6 @@ This guide helps users understand how to register, report found items, claim los
 - Monitor approval status.
 - Access chat and contact info for approved items.
 
----
-
 ## Communication
 
 ### Chat System
@@ -126,8 +116,6 @@ This guide helps users understand how to register, report found items, claim los
 - Only visible after approval.
 - Controlled through profile visibility settings.
 - Protected from public access.
-
----
 
 ## Tips & Best Practices
 
