@@ -3,23 +3,25 @@ A simple and accessible lost and found system for everyone
 
 **Development Team: TreeNoPie**
 
-## 📖 Project Overview
+## Project Overview
 
 Where's My Pie? is a lost and found system designed for campus communities. It facilitates the process of reporting found items and claiming lost belongings through a two-way verification mechanism.
 
 ### 🎯 Core Features
 - User account management with secure authentication
 - Found item reporting with photo upload
-- Advanced item search and filtering
-- Secure claim request system
+- Advanced item search and filtering by categories
+- Secure claim request system with evidence upload
 - Private messaging after successful claims
-- Contact information protection
+- Customizable contact visibility settings
+- User profile management
+- Dashboard for managing items and claims
 
-## 🏗️ System Architecture
+## System Architecture
 
 ### Technology Stack
-- Frontend: HTML5, CSS3, JavaScript (no frameworks)
-- Backend: PHP 7.4+ (no frameworks)
+- Frontend: HTML5, CSS3, JavaScript
+- Backend: PHP 7.4+
 - Database: MariaDB 10.3+
 - Web Server: Apache2
 - Platform: Raspberry Pi Zero 2W
@@ -32,7 +34,10 @@ erDiagram
         int user_id PK
         varchar username UK
         varchar password
+        varchar email UK
         varchar phone
+        varchar profile_photo
+        varchar contact_visibility
         datetime created_at
     }
     
@@ -64,7 +69,7 @@ erDiagram
         int claim_id FK
         int user_id FK
         text content
-        datetime timestamp
+        datetime created_at
     }
     
     USER ||--o{ ITEM : "submits"
@@ -73,6 +78,18 @@ erDiagram
     CLAIM ||--o{ CHATMESSAGE : "enables"
     USER ||--o{ CHATMESSAGE : "sends"
 ```
+
+### Item Categories
+- Food
+- Electronics
+- Cards & IDs
+- Wallets & Cash
+- Keys
+- Clothing & Accessories
+- Bags
+- Personal Items
+- Sports Equipment
+- Others
 
 ### Database Tables
 
@@ -85,20 +102,29 @@ erDiagram
 
 The following tables implement the entities shown in the ER diagram above.
 
-## 📱 Usage Workflows
+## Usage Workflows
 
 ### Found Item Reporting
-1. Login → "Report Found Item"
-2. Fill item details and upload photos
-3. Submit → Item appears in public listing
+1. Login to your account
+2. Click "Report Found Item"
+3. Fill in item details and category
+4. Upload item photo (optional)
+5. Submit the form
 
 ### Lost Item Claiming
-1. Search/browse items
-2. Submit claim with proof
-3. Wait for finder's review
-4. On approval → Start chat
+1. Search items by keyword or category
+2. Submit claim with description
+3. Upload evidence photo (optional)
+4. Wait for finder's review
+5. When approved, chat with finder
 
-## 🚀 Quick Setup
+### Profile Management
+1. Update contact information
+2. Set contact visibility preferences
+3. Change password
+4. Upload profile photo
+
+## Quick Setup
 
 ### Requirements
 - Raspberry Pi Zero 2W
@@ -109,7 +135,7 @@ The following tables implement the entities shown in the ER diagram above.
 ### Basic Installation
 ```bash
 # Clone repository
-git clone [repo-url] /var/www/html/wheremypie
+git clone [repo-url] /var/www/html/WheresMyPie
 
 # Setup database
 mysql -u root -p < sql/schema.sql
@@ -119,8 +145,8 @@ cp includes/config.php.example includes/config.php
 # Edit config.php with your settings
 
 # Set permissions
-sudo chown -R www-data:www-data /var/www/html/wheremypie
-sudo chmod -R 755 /var/www/html/wheremypie
+sudo chown -R www-data:www-data /var/www/html/WheresMyPie
+sudo chmod -R 755 /var/www/html/WheresMyPie
 ```
 
 Detailed instructions in [Installation.md](Installation.md)
@@ -128,23 +154,37 @@ Detailed instructions in [Installation.md](Installation.md)
 ## 📁 Project Structure
 ```
 WheresMyPie/
-├── public_html/          # All PHP scripts and web entry
-│   ├── auth/            # Login, logout, registration
-│   ├── items/           # Item listing, detail, report
-│   ├── user/            # Profile view and edit
-|   ├── chat/            # Chatroom interface
-│   ├── assets/          # CSS, JS, images
-│   └── includes/        # DB config, session, functions
-├── sql/                 # SQL schema and seed data
-└── doc/                 # Documentation and presentation files
+├── public_html/          # Web root directory
+│   ├── auth/            # Authentication (login, register, reset password)
+│   ├── items/           # Item management and search
+│   ├── claims/          # Claim request and review
+│   ├── user/            # Profile management and dashboard
+│   ├── chat/            # Private messaging system
+│   ├── errors/          # Error pages
+│   ├── assets/          # Static resources
+│   │   ├── css/        # Stylesheets
+│   │   ├── js/         # JavaScript files
+│   │   └── images/     # Image resources
+│   ├── uploads/        # User uploaded files
+│   │   ├── items/      # Item photos
+│   │   ├── evidence/   # Claim evidence
+│   │   └── profiles/   # Profile photos
+│   └── includes/       # Core PHP components
+├── sql/                # Database schema and migrations
+├── private/           # Server-side only files
+│   └── logs/         # Application logs
+└── doc/               # Documentation files
 ```
 
 ## 🔒 Security Features
-- Password hashing
-- SQL injection prevention
-- XSS protection
-- Secure file uploads
-- Protected user data
+- Secure password hashing with PHP's password_hash()
+- PDO prepared statements for SQL injection prevention
+- Input sanitization and output escaping
+- Secure file upload handling with type verification
+- User data privacy with configurable visibility settings
+- Session-based authentication
+- Protected upload directories
+- Custom error handling
 
 ## 📚 Documentation
 - [Installation Guide](Installation.md)
@@ -152,9 +192,8 @@ WheresMyPie/
 - [Admin Guide](AdminGuide.md)
 - [Team Members](Contributors.md)
 
-<!--## 📄 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
--->
+## 📄 License
+This project is for educational and non-commercial use. See the repository for details.
 
 ---
 *Building a better lost and found community together* 🌟

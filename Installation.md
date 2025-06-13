@@ -2,13 +2,27 @@
 
 This guide will walk you through the installation process of Where's My Pie? Lost and Found System. Even if you're a beginner, you'll be able to complete the installation by following these steps!
 
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Installation Steps](#installation-steps)
+  - [Step 1 - System Preparation](#step-1---system-preparation)
+  - [Step 2 - Install Basic Software](#step-2---install-basic-software)
+  - [Step 3 - Install Wheres My Pie](#step-3---install-wheres-my-pie)
+  - [Step 4 - Set File Permissions](#step-4---set-file-permissions)
+  - [Step 5 - Configure Apache](#step-5---configure-apache)
+- [Verification](#verification)
+- [Troubleshooting](#troubleshooting)
+- [Security Hardening](#security-hardening)
+- [Final Steps](#final-steps)
+- [Installation Complete](#installation-complete)
+
 ## 📦 Prerequisites
 
 ### Hardware Requirements
 - 📱 Raspberry Pi Zero 2W
 - 💾 16GB+ microSD card (Class 10 recommended)
 - 🔌 5V/2A USB power supply
-- 💻 Another computer (for preparing SD card)
 
 ### Software Requirements
 - 📥 DietPi image file
@@ -22,13 +36,6 @@ This guide will walk you through the installation process of Where's My Pie? Los
 1. **Download and Write DietPi Image**
    - Download DietPi image for Raspberry Pi from [DietPi website](https://dietpi.com/#download)
    - Use tools like balenaEtcher or Win32DiskImager to write the image to SD card
-   - After writing, open the `dietpi.txt` file on the SD card and set:
-     ```
-     AUTO_SETUP_KEYBOARD_LAYOUT=us
-     AUTO_SETUP_TIMEZONE=America/New_York    # Change to your timezone
-     AUTO_SETUP_NET_HOSTNAME=wheresmypie
-     AUTO_SETUP_NET_WIFI_ENABLED=1           # Set to 0 if using ethernet
-     ```
 
 2. **Configure WiFi (if needed)**
    - Edit `dietpi-wifi.txt` on the SD card:
@@ -69,7 +76,8 @@ This guide will walk you through the installation process of Where's My Pie? Los
    sudo systemctl enable apache2
    
    # Check if Apache is working
-   # Open in browser: http://wheresmypie.local
+   # Open in browser: http://<your-raspberry-pi-ip>
+   # (Replace <your-raspberry-pi-ip> with your actual Raspberry Pi IP address)
    # You should see the Apache default page
    ```
 
@@ -83,7 +91,8 @@ This guide will walk you through the installation process of Where's My Pie? Los
    
    # Test PHP
    echo "<?php phpinfo(); ?>" | sudo tee /var/www/html/info.php
-   # Open in browser: http://wheresmypie.local/info.php
+   # Open in browser: http://<your-raspberry-pi-ip>/info.php
+   # (Replace <your-raspberry-pi-ip> with your actual Raspberry Pi IP address)
    ```
 
 4. **Install Database**
@@ -135,9 +144,6 @@ This guide will walk you through the installation process of Where's My Pie? Los
 
 3. **Configure Application**
    ```bash
-   # Copy configuration template
-   sudo cp includes/config.php.example includes/config.php
-   
    # Edit configuration file
    sudo nano includes/config.php
    ```
@@ -153,9 +159,17 @@ This guide will walk you through the installation process of Where's My Pie? Los
 
    // Application settings
    define('APP_NAME', 'Where\'s My Pie?');
-   define('BASE_URL', '/WheresMyPie');
+   define('BASE_URL', '');
    define('UPLOAD_DIR', __DIR__ . '/../uploads/');
    define('MAX_FILE_SIZE', 5242880); // 5MB
+
+   // File upload settings
+   define('UPLOADS_DIR', __DIR__ . '/../uploads/');
+   define('ITEMS_UPLOAD_DIR', UPLOADS_DIR . 'items/');
+   define('EVIDENCE_UPLOAD_DIR', UPLOADS_DIR . 'evidence/');
+   define('PROFILES_UPLOAD_DIR', UPLOADS_DIR . 'profiles/');
+   define('ALLOWED_IMAGE_TYPES', ['image/jpeg', 'image/png', 'image/gif']);
+   define('MAX_UPLOAD_SIZE', 5 * 1024 * 1024); // 5MB
 
    // Security settings
    define('DEBUG', false);
@@ -167,21 +181,23 @@ This guide will walk you through the installation process of Where's My Pie? Los
 
 1. **Set Ownership and Permissions**
    ```bash
-   # Set the correct owner
+   # Set ownership of all project files to Apache user (www-data)
    sudo chown -R www-data:www-data /var/www/html/WheresMyPie
-   
-   # Set directory permissions
+
+   # Set permissions: directories = 755
    sudo find /var/www/html/WheresMyPie -type d -exec chmod 755 {} \;
-   
-   # Set file permissions
+
+   # Set permissions: files = 644
    sudo find /var/www/html/WheresMyPie -type f -exec chmod 644 {} \;
-   
-   # Create upload directories and set permissions
-   sudo mkdir -p /var/www/html/WheresMyPie/public_html/uploads
-   sudo mkdir -p /var/www/html/WheresMyPie/public_html/uploads/items
-   sudo mkdir -p /var/www/html/WheresMyPie/public_html/uploads/evidence
+
+   # Ensure upload directories have correct ownership and permissions
    sudo chown -R www-data:www-data /var/www/html/WheresMyPie/public_html/uploads
    sudo chmod -R 755 /var/www/html/WheresMyPie/public_html/uploads
+
+   # Ensure logs directory has correct ownership and permissions
+   sudo chown -R www-data:www-data /var/www/html/WheresMyPie/private/logs
+   sudo chmod -R 755 /var/www/html/WheresMyPie/private/logs
+
    ```
 
 2. **Configure Upload Security**
@@ -255,7 +271,6 @@ This guide will walk you through the installation process of Where's My Pie? Los
    <VirtualHost *:80>
        ServerAdmin webmaster@localhost
        DocumentRoot /var/www/html/WheresMyPie/public_html
-       ServerName WheresMyPie.local
 
        <Directory "/var/www/html/WheresMyPie/public_html">
            Options -Indexes +FollowSymLinks
@@ -324,6 +339,17 @@ This guide will walk you through the installation process of Where's My Pie? Los
 
    # Should show:
    # drwxr-xr-x www-data www-data uploads
+   ```
+
+4. **Check File Upload Directories**
+   ```bash
+   # Verify upload directories exist and have correct permissions
+   ls -la /var/www/html/WheresMyPie/public_html/uploads/{items,evidence,profiles}
+   
+   # Each should show:
+   # drwxr-xr-x www-data www-data items
+   # drwxr-xr-x www-data www-data evidence
+   # drwxr-xr-x www-data www-data profiles
    ```
 
 ## 🔧 Troubleshooting
@@ -459,7 +485,6 @@ ServerSignature Off
 
 Your **Where's My Pie?** application should now be accessible at:
 - **Direct access**: `http://your-pi-ip/WheresMyPie/`
-- **Virtual host**: `http://WheresMyPie.local/` (if configured)
 
 ---
 
