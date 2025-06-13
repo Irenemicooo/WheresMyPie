@@ -66,8 +66,11 @@ erDiagram
         int user_id PK
         varchar username UK
         varchar password
+        varchar email UK
         varchar phone
-        datetime created_at
+        varchar profile_photo
+        varchar contact_visibility
+        timestamp created_at
     }
     
     ITEM {
@@ -80,7 +83,7 @@ erDiagram
         varchar photo_path
         enum status
         int user_id FK
-        datetime created_at
+        timestamp created_at
     }
     
     CLAIM {
@@ -90,7 +93,7 @@ erDiagram
         text description
         varchar evidence_img
         enum status
-        datetime created_at
+        timestamp created_at
     }
     
     CHATMESSAGE {
@@ -98,7 +101,7 @@ erDiagram
         int claim_id FK
         int user_id FK
         text content
-        datetime timestamp
+        timestamp created_at
     }
     
     USER ||--o{ ITEM : "submits"
