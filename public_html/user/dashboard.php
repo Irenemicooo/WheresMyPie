@@ -52,24 +52,35 @@ include '../includes/header.php';
 
     <div class="dashboard-grid">
         <!-- Posted Items Section -->
-        <section class="dashboard-section">
-            <h3>My Posted Items</h3>
+        <section class="dashboard-section card">
+            <div class="section-header">
+                <h3>My Posted Items</h3>
+                <a href="../items/create.php" class="btn btn-sm btn-primary">Report New Item</a>
+            </div>
+
             <?php if (empty($items)): ?>
-                <p>No items posted yet.</p>
+                <p class="empty-state">No items posted yet.</p>
             <?php else: ?>
                 <div class="items-list">
                     <?php foreach ($items as $item): ?>
                         <div class="item-card">
-                            <h4><?= htmlspecialchars($item['title']) ?></h4>
-                            <p>Status: <?= $item['approved_status'] === 'approved' ? 'Claimed' : htmlspecialchars($item['status']) ?></p>
+                            <div class="card-header">
+                                <h4><?= htmlspecialchars($item['title']) ?></h4>
+                                <span class="status-badge <?= $item['approved_status'] === 'approved' ? 'claimed' : $item['status'] ?>">
+                                    <?= $item['approved_status'] === 'approved' ? 'Claimed' : htmlspecialchars($item['status']) ?>
+                                </span>
+                            </div>
+                            
                             <?php if ($item['pending_claims'] > 0): ?>
-                                <p class="alert alert-info">
-                                    <?= $item['pending_claims'] ?> pending claims
-                                </p>
+                                <div class="alert alert-info">
+                                    <i class="alert-icon">📋</i>
+                                    <span><?= $item['pending_claims'] ?> pending claims</span>
+                                </div>
                             <?php endif; ?>
-                            <div class="item-actions">
+
+                            <div class="card-actions">
                                 <a href="../items/view.php?id=<?= $item['item_id'] ?>" 
-                                   class="btn btn-sm btn-primary">View</a>
+                                   class="btn btn-sm btn-outline">View Details</a>
                                 <?php if ($item['pending_claims'] > 0): ?>
                                     <a href="../claims/review.php?item_id=<?= $item['item_id'] ?>" 
                                        class="btn btn-sm btn-warning">Review Claims</a>
@@ -81,33 +92,142 @@ include '../includes/header.php';
             <?php endif; ?>
         </section>
 
-        <!-- My Claims Section -->
-        <section class="dashboard-section">
-            <h3>My Claims</h3>
+        <!-- Claims Section -->
+        <section class="dashboard-section card">
+            <div class="section-header">
+                <h3>My Claims</h3>
+                <a href="../items/search.php" class="btn btn-sm btn-primary">Search Items</a>
+            </div>
+
             <?php if (empty($claims)): ?>
-                <p>No claims submitted yet.</p>
+                <p class="empty-state">No claims submitted yet.</p>
             <?php else: ?>
                 <div class="claims-list">
                     <?php foreach ($claims as $claim): ?>
                         <div class="claim-card">
-                            <h4><?= htmlspecialchars($claim['item_title']) ?></h4>
-                            <p>Status: <span class="status-<?= $claim['status'] ?>">
-                                <?= $claim['status'] === 'approved' ? 'Claimed' : ucfirst($claim['status']) ?>
-                            </span></p>
-                            <p>Submitted: <?= date('Y-m-d', strtotime($claim['created_at'])) ?></p>
-                            <a href="../claims/view.php?id=<?= $claim['claim_id'] ?>" class="btn btn-primary">View Details</a>
+                            <div class="card-header">
+                                <h4><?= htmlspecialchars($claim['item_title']) ?></h4>
+                                <span class="status-badge <?= $claim['status'] ?>">
+                                    <?= $claim['status'] === 'approved' ? 'Claimed' : ucfirst($claim['status']) ?>
+                                </span>
+                            </div>
+                            <p class="submission-date">
+                                <i class="date-icon">📅</i>
+                                Submitted: <?= date('Y-m-d', strtotime($claim['created_at'])) ?>
+                            </p>
+                            <div class="card-actions">
+                                <a href="../claims/view.php?id=<?= $claim['claim_id'] ?>" 
+                                   class="btn btn-sm btn-outline">View Details</a>
+                                <?php if ($claim['status'] === 'approved'): ?>
+                                    <a href="../chat/room.php?claim_id=<?= $claim['claim_id'] ?>" 
+                                       class="btn btn-sm btn-primary">Chat</a>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>
         </section>
     </div>
-
-    <div class="dashboard-actions">
-        <a href="../items/create.php" class="btn btn-primary">Report Found Item</a>
-        <a href="../items/search.php" class="btn btn-secondary">Search Lost Items</a>
-        <a href="profile.php" class="btn btn-info">Edit Profile Settings</a>
-    </div>
 </div>
+
+<style>
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #eee;
+}
+
+.section-header h3 {
+    margin: 0;
+    color: #2c3e50;
+}
+
+.item-card, .claim-card {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.card-header h4 {
+    margin: 0;
+    color: #2c3e50;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.875rem;
+    font-weight: bold;
+}
+
+.status-badge.available { background: #17a2b8; color: white; }
+.status-badge.claimed { background: #28a745; color: white; }
+.status-badge.pending { background: #ffd700; color: black; }
+.status-badge.rejected { background: #dc3545; color: white; }
+
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    background: #fff3cd;
+    border-radius: 4px;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.empty-state {
+    text-align: center;
+    color: #6c757d;
+    padding: 2rem;
+}
+
+.submission-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 
 <?php include '../includes/footer.php'; ?>
