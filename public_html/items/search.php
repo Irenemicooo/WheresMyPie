@@ -70,7 +70,6 @@ $items = $stmt->fetchAll();
             <option value="">-- Status --</option>
             <option value="available" <?= $status == 'available' ? 'selected' : '' ?>>Available</option>
             <option value="claimed" <?= $status == 'claimed' ? 'selected' : '' ?>>Claimed</option>
-            <option value="returned" <?= $status == 'returned' ? 'selected' : '' ?>>Returned</option>
         </select>
 
         <button type="submit">Search</button>
