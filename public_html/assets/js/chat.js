@@ -59,7 +59,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success) {
                 messageInput.value = '';
-                loadMessages();
+                // Optionally you can manually add the message if API returns it
+                // Or just wait for next polling in 5 seconds
             }
         });
     });
