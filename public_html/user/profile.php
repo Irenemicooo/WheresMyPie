@@ -3,7 +3,10 @@ require_once '../includes/config.php';
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 require_once '../includes/auth.php';
-session_start();
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $auth = new Auth($pdo);
 $auth->requireLogin();
@@ -21,6 +24,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $updates = [];
         $params = [];
+
+        // Handle password change
+        if (!empty($_POST['new_password'])) {
+            if (!validatePassword($_POST['new_password'])) {
+                throw new Exception('Password must be at least 8 characters and contain uppercase, lowercase, and numbers');
+            }
+            if ($_POST['new_password'] !== $_POST['confirm_password']) {
+                throw new Exception('Passwords do not match');
+            }
+            $updates[] = "password = ?";
+            $params[] = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
+        }
 
         // Update email if changed and valid
         if (!empty($_POST['email']) && $_POST['email'] !== $user['email']) {
