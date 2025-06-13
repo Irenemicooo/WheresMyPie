@@ -16,7 +16,8 @@ try {
     $stmt = $pdo->prepare("
         SELECT i.*, 
             COUNT(DISTINCT cp.claim_id) as pending_claims,
-            ca.status as approved_status
+            ca.status as approved_status,
+            ca.claim_id as approved_claim_id
         FROM items i 
         LEFT JOIN claims cp ON i.item_id = cp.item_id AND cp.status = 'pending'
         LEFT JOIN claims ca ON i.item_id = ca.item_id AND ca.status = 'approved'
@@ -84,6 +85,10 @@ include '../includes/header.php';
                                 <?php if ($item['pending_claims'] > 0): ?>
                                     <a href="../claims/review.php?item_id=<?= $item['item_id'] ?>" 
                                        class="btn btn-sm btn-warning">Review Claims</a>
+                                <?php endif; ?>
+                                <?php if ($item['approved_claim_id']): ?>
+                                    <a href="../chat/room.php?claim_id=<?= $item['approved_claim_id'] ?>" 
+                                       class="btn btn-sm btn-primary">Chat</a>
                                 <?php endif; ?>
                             </div>
                         </div>
