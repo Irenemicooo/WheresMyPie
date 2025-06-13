@@ -22,7 +22,7 @@ try {
         throw new Exception('Missing required fields');
     }
 
-    // 驗證使用者權限
+    // valiate user permissions
     $stmt = $pdo->prepare("
         SELECT i.user_id as finder_id, c.user_id as claimer_id
         FROM claims c
@@ -36,7 +36,7 @@ try {
         throw new Exception('Not authorized to send messages in this chat');
     }
 
-    // 儲存訊息
+    // save message
     $stmt = $pdo->prepare("
         INSERT INTO chat_messages (claim_id, user_id, content)
         VALUES (?, ?, ?)

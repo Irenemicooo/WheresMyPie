@@ -82,7 +82,7 @@ include '../includes/header.php';
             
             if (data.success) {
                 messageInput.value = '';
-                await loadMessages(); // 立即重新加載消息
+                await loadMessages(); // load new messages after sending
             } else {
                 alert(data.message || 'Failed to send message');
             }
@@ -114,10 +114,10 @@ include '../includes/header.php';
         }
     }
 
-    // 初始加載消息
+    // initial load
     loadMessages();
 
-    // 每5秒更新一次
+    // update messages every 5 seconds
     setInterval(loadMessages, 5000);
     </script>
 </div>

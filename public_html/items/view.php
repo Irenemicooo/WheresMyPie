@@ -36,7 +36,9 @@ try {
             c.status as claim_status,
             c.description as claim_description,
             c.evidence_img,
-            uc.username as claimer_name
+            uc.username as claimer_name,
+            uc.email as claimer_email,
+            uc.phone as claimer_phone
         FROM items i 
         JOIN users u ON i.user_id = u.user_id 
         LEFT JOIN claims c ON i.item_id = c.item_id AND c.status = 'approved'
@@ -95,6 +97,13 @@ try {
                          alt="Evidence" style="max-width: 300px; height: auto;">
                 </div>
             <?php endif; ?>
+            <div class="contact-info">
+                <h4>Claimer's Contact Information</h4>
+                <p><strong>Email:</strong> <?= htmlspecialchars($item['claimer_email']) ?></p>
+                <?php if (!empty($item['claimer_phone'])): ?>
+                    <p><strong>Phone:</strong> <?= htmlspecialchars($item['claimer_phone']) ?></p>
+                <?php endif; ?>
+            </div>
             <?php if (!empty($item['claim_id'])): ?>
                 <a href="/chat/room.php?claim_id=<?= htmlspecialchars($item['claim_id']) ?>" 
                    class="btn btn-primary">Chat with Claimer</a>

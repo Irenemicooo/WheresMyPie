@@ -19,7 +19,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 try {
     $stmt = $pdo->prepare("
         SELECT c.*, i.title as item_title, i.photo_path, i.location, i.date_found,
-               u.username as finder_name
+               u.username as finder_name, u.email as finder_email, u.phone as finder_phone
         FROM claims c
         JOIN items i ON c.item_id = i.item_id
         JOIN users u ON i.user_id = u.user_id
@@ -71,6 +71,16 @@ include '../includes/header.php';
             <?php endif; ?>
         </div>
 
+        <?php if ($claim['status'] === 'approved'): ?>
+            <div class="contact-info">
+                <h4>Finder's Contact Information</h4>
+                <p><strong>Email:</strong> <?= htmlspecialchars($claim['finder_email']) ?></p>
+                <?php if (!empty($claim['finder_phone'])): ?>
+                    <p><strong>Phone:</strong> <?= htmlspecialchars($claim['finder_phone']) ?></p>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+        
         <?php if ($claim['status'] === 'approved'): ?>
             <a href="../chat/room.php?claim_id=<?= $claim['claim_id'] ?>" 
                class="btn btn-primary">Chat with Finder</a>

@@ -74,7 +74,7 @@ function updateClaimStatus(claimId, status) {
         return;
     }
 
-    fetch('/claims/api/update.php', {  // 修改為完整路徑
+    fetch('/claims/api/update.php', {  // Update the path as needed
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

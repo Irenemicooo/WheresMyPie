@@ -20,7 +20,7 @@ try {
         throw new Exception('Claim ID is required');
     }
 
-    // 驗證用戶權限
+    // validate user permissions
     $stmt = $pdo->prepare("
         SELECT i.user_id as finder_id, c.user_id as claimer_id
         FROM claims c
@@ -34,7 +34,7 @@ try {
         throw new Exception('Not authorized to view this chat');
     }
 
-    // 獲取訊息
+    // fetch messages
     $stmt = $pdo->prepare("
         SELECT m.*, u.username 
         FROM chat_messages m
