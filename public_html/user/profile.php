@@ -27,8 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Handle password change
         if (!empty($_POST['new_password'])) {
-            if (!validatePassword($_POST['new_password'])) {
-                throw new Exception('Password must be at least 8 characters and contain uppercase, lowercase, and numbers');
+            if (strlen($_POST['new_password']) < 6) {
+                throw new Exception('Password must be at least 6 characters');
             }
             if ($_POST['new_password'] !== $_POST['confirm_password']) {
                 throw new Exception('Passwords do not match');

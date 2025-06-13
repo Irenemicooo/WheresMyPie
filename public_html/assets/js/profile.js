@@ -7,6 +7,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const newPass = document.getElementById('new_password').value;
         const confirmPass = document.getElementById('confirm_password').value;
 
+        if (newPass && newPass.length < 6) {
+            document.getElementById('new_password').setCustomValidity('Password must be at least 6 characters');
+            return;
+        } else {
+            document.getElementById('new_password').setCustomValidity('');
+        }
+
         if (newPass && !confirmPass) return;
         
         if (newPass !== confirmPass) {
