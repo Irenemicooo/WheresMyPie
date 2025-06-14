@@ -125,6 +125,9 @@ include '../includes/header.php';
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     padding: 1.5rem;
     margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;  /* 確保卡片高度一致 */
 }
 
 .section-title {
@@ -132,6 +135,21 @@ include '../includes/header.php';
     border-bottom: 2px solid #eee;
     padding-bottom: 0.5rem;
     margin-bottom: 1.5rem;
+    flex-shrink: 0;  /* 防止標題被壓縮 */
+}
+
+.item-details, .claim-status {
+    flex-grow: 1;    /* 讓內容區域可以彈性擴展 */
+    display: flex;
+    flex-direction: column;
+}
+
+.item-info, .claim-description {
+    flex-grow: 1;    /* 讓內容區域填滿剩餘空間 */
+}
+
+.evidence-image, .contact-info {
+    margin-top: auto; /* 將圖片和聯絡資訊推到底部 */
 }
 
 .status-badge {
