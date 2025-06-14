@@ -107,7 +107,9 @@ try {
                             <p><strong>Claimed by:</strong> <?= htmlspecialchars($item['claimer_name'] ?? 'Unknown') ?></p>
                             <div class="claim-description">
                                 <p><strong>Claim Description:</strong></p>
-                                <?= nl2br(htmlspecialchars($item['claim_description'] ?? 'No description provided')) ?>
+                                <div class="description-text bg-light">
+                                    <?= nl2br(htmlspecialchars($item['claim_description'] ?? 'No description provided')) ?>
+                                </div>
                             </div>
                             
                             <?php if (!empty($item['evidence_img'])): ?>
