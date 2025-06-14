@@ -18,7 +18,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 try {
     $stmt = $pdo->prepare("
-        SELECT c.*, i.title as item_title, i.photo_path, i.location, i.date_found,
+        SELECT c.*, i.title as item_title, i.photo_path, i.location, i.date_found, i.description as item_description,
                u.username as finder_name, u.email as finder_email, u.phone as finder_phone
         FROM claims c
         JOIN items i ON c.item_id = i.item_id
@@ -62,6 +62,13 @@ include '../includes/header.php';
                     <p><strong>Found by:</strong> <?= htmlspecialchars($claim['finder_name']) ?></p>
                     <p><strong>Location Found:</strong> <?= htmlspecialchars($claim['location']) ?></p>
                     <p><strong>Date Found:</strong> <?= htmlspecialchars($claim['date_found']) ?></p>
+                    
+                    <div class="item-description">
+                        <p><strong>Description:</strong></p>
+                        <div class="description-text">
+                            <?= nl2br(htmlspecialchars($claim['item_description'])) ?>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

@@ -152,7 +152,7 @@ try {
     </div>
     
     <div class="bottom-actions">
-        <a href="index.php" class="btn btn-secondary">Back to List</a>
+        <a href="/user/dashboard.php" class="btn btn-secondary">Back to Dashboard</a>
     </div>
 </div>
 
