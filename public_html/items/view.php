@@ -16,6 +16,15 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $item_id = (int) $_GET['id'];
 
 try {
+    // 檢查是否有任何認領請求
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*) as claim_count 
+        FROM claims 
+        WHERE item_id = ?
+    ");
+    $stmt->execute([$item_id]);
+    $hasClaims = (bool)$stmt->fetch()['claim_count'];
+
     $stmt = $pdo->prepare("
         SELECT i.*, 
             u.username,
