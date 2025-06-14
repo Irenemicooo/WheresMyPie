@@ -5,15 +5,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const claimId = document.getElementById('claimId').value;
 
     let lastMessageId = 0;
+    const shownMessageIds = new Set(); // prevent duplicate messages
 
     function loadMessages() {
         fetch(`../chat/api/fetch.php?claim_id=${claimId}&last_id=${lastMessageId}`)
             .then(response => response.json())
             .then(data => {
-                if (data.success && data.messages.length > 0) {
-                    data.messages.forEach(message => {
-                        appendMessage(message);
-                        lastMessageId = Math.max(lastMessageId, message.message_id);
+                const messages = data.data || data.messages || [];
+                if (data.success && messages.length > 0) {
+                    messages.forEach(message => {
+                        if (!shownMessageIds.has(message.message_id)) {
+                            appendMessage(message);
+                            shownMessageIds.add(message.message_id);
+                            lastMessageId = Math.max(lastMessageId, message.message_id);
+                        }
                     });
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
@@ -21,12 +26,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function appendMessage(message) {
-        // avoid duplicate messages
-        if (document.getElementById(`message-${message.message_id}`)) return;
-
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${message.is_mine ? 'mine' : 'theirs'}`;
-        messageDiv.id = `message-${message.message_id}`;
         messageDiv.innerHTML = `
             <div class="message-content">
                 <div class="message-text">${escapeHtml(message.content)}</div>
@@ -61,16 +62,22 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success && data.message_data) {
+            if (data.success && data.messageData) {
                 messageInput.value = '';
-                appendMessage(data.message_data);
-                lastMessageId = Math.max(lastMessageId, data.message_data.message_id);
+
+                // use shownMessageIds to prevent duplicates
+                if (!shownMessageIds.has(data.messageData.message_id)) {
+                    appendMessage(data.messageData);
+                    shownMessageIds.add(data.messageData.message_id);
+                    lastMessageId = Math.max(lastMessageId, data.messageData.message_id);
+                }
+
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
         });
     });
 
-    // Initial load and polling
+    // start loading messages
     loadMessages();
     setInterval(loadMessages, 5000);
 });

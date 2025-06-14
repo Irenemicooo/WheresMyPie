@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 header('Content-Type: application/json');
-$response = ['success' => false, 'message' => ''];
+$response = ['success' => false, 'message' => '', 'messageData' => null];
 
 try {
     if (!isset($_SESSION['user_id'])) {
@@ -41,7 +41,6 @@ try {
         INSERT INTO chat_messages (claim_id, user_id, content)
         VALUES (?, ?, ?)
     ");
-
     $result = $stmt->execute([
         $data['claim_id'],
         $_SESSION['user_id'],
@@ -52,22 +51,22 @@ try {
         throw new Exception('Failed to save message');
     }
 
-    // retrieve the inserted message
-    $insertedId = $pdo->lastInsertId();
+    $messageId = $pdo->lastInsertId();
+
+    // fetch the newly inserted message
     $stmt = $pdo->prepare("
         SELECT m.*, u.username
         FROM chat_messages m
         JOIN users u ON m.user_id = u.user_id
         WHERE m.message_id = ?
     ");
-    $stmt->execute([$insertedId]);
-    $sentMessage = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    $sentMessage['is_mine'] = true;
+    $stmt->execute([$messageId]);
+    $message = $stmt->fetch(PDO::FETCH_ASSOC);
+    $message['is_mine'] = true;
 
     $response['success'] = true;
     $response['message'] = 'Message sent successfully';
-    $response['message_data'] = $sentMessage;
+    $response['messageData'] = $message;
 
 } catch (Exception $e) {
     $response['message'] = DEBUG ? $e->getMessage() : 'Failed to send message';
