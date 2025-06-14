@@ -17,12 +17,12 @@ try {
     }
 
     $data = json_decode(file_get_contents('php://input'), true);
-    
+
     if (empty($data['claim_id']) || empty($data['content'])) {
         throw new Exception('Missing required fields');
     }
 
-    // valiate user permissions
+    // validate user permissions
     $stmt = $pdo->prepare("
         SELECT i.user_id as finder_id, c.user_id as claimer_id
         FROM claims c
@@ -41,7 +41,7 @@ try {
         INSERT INTO chat_messages (claim_id, user_id, content)
         VALUES (?, ?, ?)
     ");
-    
+
     $result = $stmt->execute([
         $data['claim_id'],
         $_SESSION['user_id'],
@@ -52,8 +52,22 @@ try {
         throw new Exception('Failed to save message');
     }
 
+    // retrieve the inserted message
+    $insertedId = $pdo->lastInsertId();
+    $stmt = $pdo->prepare("
+        SELECT m.*, u.username
+        FROM chat_messages m
+        JOIN users u ON m.user_id = u.user_id
+        WHERE m.message_id = ?
+    ");
+    $stmt->execute([$insertedId]);
+    $sentMessage = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $sentMessage['is_mine'] = true;
+
     $response['success'] = true;
     $response['message'] = 'Message sent successfully';
+    $response['message_data'] = $sentMessage;
 
 } catch (Exception $e) {
     $response['message'] = DEBUG ? $e->getMessage() : 'Failed to send message';

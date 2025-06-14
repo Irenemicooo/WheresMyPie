@@ -12,10 +12,8 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 if (data.success && data.messages.length > 0) {
                     data.messages.forEach(message => {
-                        if (message.message_id > lastMessageId) {
-                            appendMessage(message);
-                            lastMessageId = Math.max(lastMessageId, message.message_id);
-                        }
+                        appendMessage(message);
+                        lastMessageId = Math.max(lastMessageId, message.message_id);
                     });
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
@@ -23,8 +21,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function appendMessage(message) {
+        // avoid duplicate messages
+        if (document.getElementById(`message-${message.message_id}`)) return;
+
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${message.is_mine ? 'mine' : 'theirs'}`;
+        messageDiv.id = `message-${message.message_id}`;
         messageDiv.innerHTML = `
             <div class="message-content">
                 <div class="message-text">${escapeHtml(message.content)}</div>
@@ -57,26 +59,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 content: message
             })
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    messageInput.value = '';
-
-                    // Manually add the sent message without waiting for polling
-                    const now = new Date();
-                    const timestamp = now.toISOString().slice(0, 19).replace('T', ' ');
-
-                    appendMessage({
-                        content: message,
-                        created_at: timestamp,
-                        is_mine: true,
-                        message_id: lastMessageId + 1 // temporary increment
-                    });
-
-                    lastMessageId++; // prevent duplicate from server response
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
-            });
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.message_data) {
+                messageInput.value = '';
+                appendMessage(data.message_data);
+                lastMessageId = Math.max(lastMessageId, data.message_data.message_id);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
     });
 
     // Initial load and polling
