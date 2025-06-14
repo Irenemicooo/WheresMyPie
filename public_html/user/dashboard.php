@@ -68,17 +68,19 @@ include '../includes/header.php';
                             <div class="card-header">
                                 <h4><?= htmlspecialchars($item['title']) ?></h4>
                                 <span class="status-badge <?= $item['approved_status'] === 'approved' ? 'claimed' : $item['status'] ?>">
-                                    <?= $item['approved_status'] === 'approved' ? 'Claimed' : htmlspecialchars($item['status']) ?>
+                                    <?= $item['approved_status'] === 'approved' ? 'Claimed' : ucfirst(htmlspecialchars($item['status'])) ?>
                                 </span>
                             </div>
-                            
+                            <p class="submission-date">
+                                <i class="date-icon">📅</i>
+                                Posted: <?= date('Y-m-d', strtotime($item['created_at'])) ?>
+                            </p>
                             <?php if ($item['pending_claims'] > 0): ?>
                                 <div class="alert alert-info">
                                     <i class="alert-icon">📋</i>
                                     <span><?= $item['pending_claims'] ?> pending claims</span>
                                 </div>
                             <?php endif; ?>
-
                             <div class="card-actions">
                                 <a href="../items/view.php?id=<?= $item['item_id'] ?>" 
                                    class="btn btn-sm btn-outline">View Details</a>
