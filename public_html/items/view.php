@@ -89,7 +89,7 @@ try {
                     </p>
                     <div class="item-description">
                         <p><strong>Description:</strong></p>
-                        <div class="description-text">
+                        <div class="description-text bg-light">
                             <?= nl2br(htmlspecialchars($item['description'])) ?>
                         </div>
                     </div>
@@ -242,6 +242,14 @@ function confirmDelete(itemId) {
 .bottom-actions {
     margin-top: 2rem;
     text-align: center;
+}
+
+.description-text {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    line-height: 1.5;
 }
 </style>
 

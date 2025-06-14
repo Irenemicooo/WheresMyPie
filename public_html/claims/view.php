@@ -65,7 +65,7 @@ include '../includes/header.php';
                     
                     <div class="item-description">
                         <p><strong>Description:</strong></p>
-                        <div class="description-text">
+                        <div class="description-text bg-light">
                             <?= nl2br(htmlspecialchars($claim['item_description'])) ?>
                         </div>
                     </div>
@@ -83,7 +83,7 @@ include '../includes/header.php';
                     </span>
                 </p>
                 <p><strong>Your Description:</strong></p>
-                <div class="claim-description">
+                <div class="claim-description bg-light">
                     <?= nl2br(htmlspecialchars($claim['description'])) ?>
                 </div>
                 
@@ -181,11 +181,12 @@ include '../includes/header.php';
     color: #fff;
 }
 
-.claim-description {
+.description-text, .claim-description {
     background: #f8f9fa;
     padding: 1rem;
     border-radius: 4px;
-    margin: 1rem 0;
+    margin-top: 0.5rem;
+    line-height: 1.5;
 }
 
 .contact-info {
