@@ -62,17 +62,9 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success && data.messageData) {
+            if (data.success) {
                 messageInput.value = '';
-
-                // use shownMessageIds to prevent duplicates
-                if (!shownMessageIds.has(data.messageData.message_id)) {
-                    appendMessage(data.messageData);
-                    shownMessageIds.add(data.messageData.message_id);
-                    lastMessageId = Math.max(lastMessageId, data.messageData.message_id);
-                }
-
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+                // no immediate append; let loadMessages fetch from DB
             }
         });
     });
