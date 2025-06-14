@@ -71,5 +71,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // start loading messages
     loadMessages();
-    setInterval(loadMessages, 5000);
+    setInterval(loadMessages, 2000);
 });
