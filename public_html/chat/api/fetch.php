@@ -34,15 +34,26 @@ try {
         throw new Exception('Not authorized to view this chat');
     }
 
-    // fetch messages
-    $stmt = $pdo->prepare("
+    // build fetch query
+    $sql = "
         SELECT m.*, u.username 
         FROM chat_messages m
         JOIN users u ON m.user_id = u.user_id
         WHERE m.claim_id = ?
-        ORDER BY m.created_at ASC
-    ");
-    $stmt->execute([$_GET['claim_id']]);
+    ";
+
+    $params = [$_GET['claim_id']];
+
+    // Add condition for only fetching new messages
+    if (!empty($_GET['last_id'])) {
+        $sql .= " AND m.message_id > ?";
+        $params[] = $_GET['last_id'];
+    }
+
+    $sql .= " ORDER BY m.created_at ASC";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
     $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($messages as &$message) {

@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const chatForm = document.getElementById('chatForm');
     const messageInput = document.getElementById('messageInput');
     const chatMessages = document.getElementById('chatMessages');
@@ -12,8 +12,10 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success && data.messages.length > 0) {
                     data.messages.forEach(message => {
-                        appendMessage(message);
-                        lastMessageId = Math.max(lastMessageId, message.message_id);
+                        if (message.message_id > lastMessageId) {
+                            appendMessage(message);
+                            lastMessageId = Math.max(lastMessageId, message.message_id);
+                        }
                     });
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
@@ -40,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return div.innerHTML;
     }
 
-    chatForm.addEventListener('submit', function(e) {
+    chatForm.addEventListener('submit', function (e) {
         e.preventDefault();
         const message = messageInput.value.trim();
         if (!message) return;
@@ -55,14 +57,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 content: message
             })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                messageInput.value = '';
-                // Optionally you can manually add the message if API returns it
-                // Or just wait for next polling in 5 seconds
-            }
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageInput.value = '';
+
+                    // Manually add the sent message without waiting for polling
+                    const now = new Date();
+                    const timestamp = now.toISOString().slice(0, 19).replace('T', ' ');
+
+                    appendMessage({
+                        content: message,
+                        created_at: timestamp,
+                        is_mine: true,
+                        message_id: lastMessageId + 1 // temporary increment
+                    });
+
+                    lastMessageId++; // prevent duplicate from server response
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            });
     });
 
     // Initial load and polling
