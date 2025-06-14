@@ -20,7 +20,7 @@ define('ALLOWED_IMAGE_TYPES', ['image/jpeg', 'image/png', 'image/gif']);
 define('MAX_UPLOAD_SIZE', 5 * 1024 * 1024); // 5MB
 
 // Security settings
-define('DEBUG', true);      // Set false in production
+define('DEBUG', false);      // Set false in production
 define('HASH_COST', 10);    // Password hashing cost
 
 // Session settings
