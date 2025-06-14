@@ -102,6 +102,12 @@ try {
                             <?= nl2br(htmlspecialchars($item['description'])) ?>
                         </div>
                     </div>
+
+                    <?php if ($auth->isLoggedIn() && $_SESSION['user_id'] === $item['user_id'] && !$hasClaims): ?>
+                        <div class="action-buttons">
+                            <button onclick="confirmDelete(<?= $item_id ?>)" class="btn btn-danger">Delete Item</button>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </section>
@@ -145,11 +151,8 @@ try {
                             <?php endif; ?>
                         </div>
                     <?php else: ?>
-                        <div class="claim-actions">
-                            <?php if (!$hasClaims): ?>
-                                <button onclick="confirmDelete(<?= $item_id ?>)" class="btn btn-danger">Delete Item</button>
-                            <?php endif; ?>
-                        </div>
+                        <h3 class="section-title">Claim Status</h3>
+                        <p class="empty-state">This item has not been claimed yet.</p>
                     <?php endif; ?>
                 <?php else: ?>
                     <h3 class="section-title">Claim Actions</h3>
@@ -247,12 +250,21 @@ function confirmDelete(itemId) {
 }
 
 .action-buttons {
-    margin-top: 1rem;
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .bottom-actions {
     margin-top: 2rem;
     text-align: center;
+}
+
+.empty-state {
+    text-align: center;
+    color: #6c757d;
+    padding: 2rem;
+    font-style: italic;
 }
 
 .description-text {
