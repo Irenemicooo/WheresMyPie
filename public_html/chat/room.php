@@ -57,69 +57,6 @@ include '../includes/header.php';
             <button type="submit" class="btn btn-primary">Send</button>
         </div>
     </form>
-
-    <script>
-    document.getElementById('chatForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const messageInput = document.getElementById('messageInput');
-        const claimId = document.getElementById('claimId').value;
-        const content = messageInput.value.trim();
-
-        if (!content) return;
-
-        try {
-            const response = await fetch('/chat/api/send.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    claim_id: claimId,
-                    content: content
-                })
-            });
-            const data = await response.json();
-            
-            if (data.success) {
-                messageInput.value = '';
-                await loadMessages(); // load new messages after sending
-            } else {
-                alert(data.message || 'Failed to send message');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Failed to send message');
-        }
-    });
-
-    async function loadMessages() {
-        const claimId = document.getElementById('claimId').value;
-        try {
-            const response = await fetch(`/chat/api/fetch.php?claim_id=${claimId}`);
-            const data = await response.json();
-            
-            if (data.success) {
-                const chatMessages = document.getElementById('chatMessages');
-                chatMessages.innerHTML = data.data.map(message => `
-                    <div class="message ${message.user_id == <?= $_SESSION['user_id'] ?> ? 'mine' : 'other'}">
-                        <strong>${message.username}:</strong>
-                        <p>${message.content}</p>
-                        <small>${new Date(message.created_at).toLocaleString()}</small>
-                    </div>
-                `).join('');
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-        } catch (error) {
-            console.error('Error loading messages:', error);
-        }
-    }
-
-    // initial load
-    loadMessages();
-
-    // update messages every 5 seconds
-    setInterval(loadMessages, 5000);
-    </script>
 </div>
 
 <?php include '../includes/footer.php'; ?>
