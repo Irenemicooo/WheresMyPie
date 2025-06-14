@@ -61,70 +61,99 @@ try {
 <?php include '../includes/header.php'; ?>
 
 <div class="container">
-    <h2><?= htmlspecialchars($item['title']) ?></h2>
-
-    <?php if (!empty($item['photo_path'])): ?>
-        <div class="item-image">
-            <img src="/<?= htmlspecialchars($item['photo_path']) ?>" 
-                 alt="Item photo" 
-                 style="max-width: 100%; height: auto; max-height: 400px; object-fit: contain;">
-        </div>
-    <?php endif; ?>
-
-    <p><strong>Description:</strong> <?= nl2br(htmlspecialchars($item['description'])) ?></p>
-    <p><strong>Category:</strong> <?= htmlspecialchars($item['category']) ?></p>
-    <p><strong>Found at:</strong> <?= htmlspecialchars($item['location']) ?></p>
-    <p><strong>Date Found:</strong> <?= htmlspecialchars($item['date_found']) ?></p>
-    <p><strong>Posted by:</strong> <?= htmlspecialchars($item['username']) ?></p>
-
-    <?php if ($auth->isLoggedIn() && 
-              $_SESSION['user_id'] !== $item['user_id'] && 
-              !$item['is_claimed'] && 
-              !$item['user_claimed']): ?>
-        <a href="../claims/create.php?item_id=<?= $item['item_id'] ?>" class="btn btn-success">I want to claim this</a>
-    <?php endif; ?>
-
-    <!-- 認領資訊區塊 -->
-    <?php if ($auth->isLoggedIn() && $_SESSION['user_id'] === $item['user_id'] && ($item['claim_status'] ?? '') === 'approved'): ?>
-        <div class="claim-info">
-            <h3>Claim Information</h3>
-            <p><strong>Claimed by:</strong> <?= htmlspecialchars($item['claimer_name'] ?? 'Unknown') ?></p>
-            <p><strong>Claim Description:</strong> <?= nl2br(htmlspecialchars($item['claim_description'] ?? 'No description provided')) ?></p>
-            <?php if (!empty($item['evidence_img'])): ?>
-                <div class="evidence-image">
-                    <h4>Evidence Photo:</h4>
-                    <img src="/<?= htmlspecialchars($item['evidence_img']) ?>" 
-                         alt="Evidence" style="max-width: 300px; height: auto;">
-                </div>
-            <?php endif; ?>
-            <div class="contact-info">
-                <h4>Claimer's Contact Information</h4>
-                <p><strong>Email:</strong> <?= htmlspecialchars($item['claimer_email']) ?></p>
-                <?php if (!empty($item['claimer_phone'])): ?>
-                    <p><strong>Phone:</strong> <?= htmlspecialchars($item['claimer_phone']) ?></p>
-                <?php endif; ?>
-            </div>
-            <?php if (!empty($item['claim_id'])): ?>
-                <a href="/chat/room.php?claim_id=<?= htmlspecialchars($item['claim_id']) ?>" 
-                   class="btn btn-primary">Chat with Claimer</a>
-            <?php endif; ?>
-        </div>
-    <?php endif; ?>
-
-    <?php if ($auth->isLoggedIn() && $_SESSION['user_id'] === $item['user_id']): ?>
-        <?php
-        // Check if item has any claims
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM claims WHERE item_id = ?");
-        $stmt->execute([$item_id]);
-        $hasClaims = $stmt->fetchColumn() > 0;
-        ?>
-        
-        <?php if (!$hasClaims): ?>
-            <button onclick="confirmDelete(<?= $item_id ?>)" class="btn btn-danger">Delete Item</button>
-        <?php endif; ?>
-    <?php endif; ?>
+    <h2>Item Details</h2>
     
-    <p><a href="index.php" class="btn btn-secondary">Back to List</a></p>
+    <div class="item-details-grid">
+        <!-- Item Information Section -->
+        <section class="item-info-section card">
+            <h3 class="section-title">Found Item Information</h3>
+            <div class="item-details">
+                <h4><?= htmlspecialchars($item['title']) ?></h4>
+                
+                <?php if (!empty($item['photo_path'])): ?>
+                    <div class="item-image">
+                        <img src="/<?= htmlspecialchars($item['photo_path']) ?>" 
+                             alt="Item photo" style="max-width: 300px; height: auto;">
+                    </div>
+                <?php endif; ?>
+
+                <div class="item-info">
+                    <p><strong>Category:</strong> <?= htmlspecialchars($item['category']) ?></p>
+                    <p><strong>Found at:</strong> <?= htmlspecialchars($item['location']) ?></p>
+                    <p><strong>Date Found:</strong> <?= htmlspecialchars($item['date_found']) ?></p>
+                    <p><strong>Posted by:</strong> <?= htmlspecialchars($item['username']) ?></p>
+                    <p><strong>Status:</strong> 
+                        <span class="status-badge <?= $item['is_claimed'] ? 'claimed' : 'available' ?>">
+                            <?= $item['is_claimed'] ? 'Claimed' : 'Available' ?>
+                        </span>
+                    </p>
+                    <div class="item-description">
+                        <p><strong>Description:</strong></p>
+                        <div class="description-text">
+                            <?= nl2br(htmlspecialchars($item['description'])) ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Claim Information Section -->
+        <section class="claim-info-section card">
+            <?php if ($auth->isLoggedIn()): ?>
+                <?php if ($_SESSION['user_id'] === $item['user_id']): ?>
+                    <?php if (($item['claim_status'] ?? '') === 'approved'): ?>
+                        <h3 class="section-title">Claim Information</h3>
+                        <div class="claim-details">
+                            <p><strong>Claimed by:</strong> <?= htmlspecialchars($item['claimer_name'] ?? 'Unknown') ?></p>
+                            <div class="claim-description">
+                                <p><strong>Claim Description:</strong></p>
+                                <?= nl2br(htmlspecialchars($item['claim_description'] ?? 'No description provided')) ?>
+                            </div>
+                            
+                            <?php if (!empty($item['evidence_img'])): ?>
+                                <div class="evidence-image">
+                                    <h4>Evidence Photo:</h4>
+                                    <img src="/<?= htmlspecialchars($item['evidence_img']) ?>" 
+                                         alt="Evidence" style="max-width: 300px; height: auto;">
+                                </div>
+                            <?php endif; ?>
+
+                            <div class="contact-info card">
+                                <h4>Claimer's Contact Information</h4>
+                                <p><strong>Email:</strong> <?= htmlspecialchars($item['claimer_email']) ?></p>
+                                <?php if (!empty($item['claimer_phone'])): ?>
+                                    <p><strong>Phone:</strong> <?= htmlspecialchars($item['claimer_phone']) ?></p>
+                                <?php endif; ?>
+                            </div>
+
+                            <?php if (!empty($item['claim_id'])): ?>
+                                <div class="action-buttons">
+                                    <a href="../chat/room.php?claim_id=<?= htmlspecialchars($item['claim_id']) ?>" 
+                                       class="btn btn-primary">Chat with Claimer</a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="claim-actions">
+                            <?php if (!$hasClaims): ?>
+                                <button onclick="confirmDelete(<?= $item_id ?>)" class="btn btn-danger">Delete Item</button>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <h3 class="section-title">Claim Actions</h3>
+                    <?php if (!$item['is_claimed'] && !$item['user_claimed']): ?>
+                        <a href="../claims/create.php?item_id=<?= $item['item_id'] ?>" 
+                           class="btn btn-success">I want to claim this</a>
+                    <?php endif; ?>
+                <?php endif; ?>
+            <?php endif; ?>
+        </section>
+    </div>
+    
+    <div class="bottom-actions">
+        <a href="index.php" class="btn btn-secondary">Back to List</a>
+    </div>
 </div>
 
 <script>
@@ -134,5 +163,86 @@ function confirmDelete(itemId) {
     }
 }
 </script>
+
+<style>
+.item-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.item-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.item-image {
+    margin-bottom: 1rem;
+}
+
+.item-info {
+    flex-grow: 1;
+}
+
+.item-description {
+    margin-top: 1rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: bold;
+}
+
+.status-badge.claimed {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-badge.available {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.claim-info-section {
+    margin-top: 2rem;
+}
+
+.claim-details {
+    margin-bottom: 1rem;
+}
+
+.evidence-image {
+    margin-top: 1rem;
+}
+
+.contact-info {
+    margin-top: 1rem;
+}
+
+.action-buttons {
+    margin-top: 1rem;
+}
+
+.bottom-actions {
+    margin-top: 2rem;
+    text-align: center;
+}
+</style>
 
 <?php include '../includes/footer.php'; ?>
